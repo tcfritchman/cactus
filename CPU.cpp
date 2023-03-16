@@ -64,57 +64,90 @@ void CPU::Immediate()
 void CPU::ZeroPage()
 {
 	mAddrHi = 0;
-	mAddrLo = mRegPC + 1;
+	mAddrLo = mBus.read(mRegPC + 1);
 	mAddr = mAddrLo;
 	mData = mBus.read(mAddr);
 }
 
 void CPU::ZeroPageX()
 {
-	// TODO
+	mAddrHi = 0;
+	mAddrLo = mBus.read(mRegPC + 1) + mRegX;
+	mAddr = mAddrLo;
+	mData = mBus.read(mAddr);
 }
 
 void CPU::ZeroPageY()
 {
-	// TODO
+	mAddrHi = 0;
+	mAddrLo = mBus.read(mRegPC + 1) + mRegY;
+	mAddr = mAddrLo;
+	mData = mBus.read(mAddr);
 }
 
 void CPU::Relative()
 {
-	// TODO
+	auto offset = static_cast<int8_t>(mBus.read(mRegPC + 1)); // convert to signed value
+	mAddr = mRegPC + offset; // TODO: Does it wrap around?
+	// TODO: hi and lo addr bytes?
+	mData = mBus.read(mAddr); // Not used
 }
 
 void CPU::Absolute()
 {
-	mAddrHi = mBus.read(mRegPC + 1);
-	mAddrLo = mBus.read(mRegPC + 2);
+	mAddrLo = mBus.read(mRegPC + 1);
+	mAddrHi = mBus.read(mRegPC + 2);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
 	mData = mBus.read(mAddr);
 }
 
 void CPU::AbsoluteX()
 {
-	// TODO
+	mAddrLo = mBus.read(mRegPC + 1);
+	mAddrHi = mBus.read(mRegPC + 2);
+	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo + mRegX;
+	mData = mBus.read(mAddr);
 }
 
 void CPU::AbsoluteY()
 {
-	// TODO
+	mAddrLo = mBus.read(mRegPC + 1);
+	mAddrHi = mBus.read(mRegPC + 2);
+	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo + mRegY;
+	mData = mBus.read(mAddr);
 }
 
 void CPU::Indirect()
 {
-	// TODO
+	auto indirect_lo = mBus.read(mRegPC + 1);
+	auto indirect_hi = mBus.read(mRegPC + 2);
+	auto indirect_addr = (((uint16_t)indirect_hi) << 8) + indirect_lo;
+	mAddrLo = mBus.read(indirect_addr);
+	mAddrHi = mBus.read(indirect_addr + 1);
+	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mData = mBus.read(mAddr); // Not used
 }
 
 void CPU::IndexedIndirect()
 {
-	// TODO
+	auto indirect_zero_page = mBus.read(mRegPC + 1);
+	uint8_t indirect_addr = indirect_zero_page + mRegX;
+	mAddrLo = mBus.read(indirect_addr);
+	mAddrHi = mBus.read(indirect_addr + 1);
+	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mData = mBus.read(mAddr);
 }
 
 void CPU::IndirectIndexed()
 {
-	// TODO
+	auto indirect_zero_page = mBus.read(mRegPC + 1);
+	auto indirect_lo = mBus.read(indirect_zero_page + 1);
+	auto indirect_hi = mBus.read(indirect_zero_page + 2);
+	auto indirect_addr = (((uint16_t)indirect_hi) << 8) + indirect_lo + mRegY;
+	mAddrLo = mBus.read(indirect_addr);
+	mAddrHi = mBus.read(indirect_addr + 1);
+	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mData = mBus.read(mAddr);
 }
 
 void CPU::ADC()
