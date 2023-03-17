@@ -8,12 +8,23 @@
 class CPU
 {
  public:
+	struct State
+	{
+		const uint8_t A;
+		const uint8_t X;
+		const uint8_t Y;
+		const uint8_t S;
+		const uint16_t PC;
+		const uint16_t SP;
+	};
+
 	void Cycle();
 	void IRQ();
 	void Reset();
 	void NMI();
 
 	void Print() const;
+	State GetState() const;
 
 	explicit CPU(DataBus& mBus);
 	CPU() = delete;
@@ -40,11 +51,11 @@ class CPU
 	bool mOverflowFlag = false;
 	bool mNegativeFlag = false;
 
-	uint8_t mCurrentInstruction;
-	uint8_t mAddrHi;
-	uint8_t mAddrLo;
-	uint16_t mAddr;
-	uint8_t mData;
+	uint8_t mCurrentInstruction = 0;
+	uint8_t mAddrHi = 0;
+	uint8_t mAddrLo = 0;
+	uint16_t mAddr = 0;
+	uint8_t mData = 0;
 
 	// Addressing modes
 	void Implicit();

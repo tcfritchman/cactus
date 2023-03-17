@@ -42,6 +42,17 @@ void CPU::Print() const
 		mRegA, mRegX, mRegY, mRegSP, mRegPC, mCarryFlag, mZeroFlag, mInterruptDisableFlag, mOverflowFlag, mNegativeFlag);
 }
 
+CPU::State CPU::GetState() const
+{
+	uint8_t flags = (mCarryFlag)
+		& (mZeroFlag << 1)
+		& (mInterruptDisableFlag << 2)
+		& (mOverflowFlag << 6)
+		& (mNegativeFlag << 7);
+
+	return CPU::State {mRegA, mRegX, mRegY, flags, mRegPC, mRegSP};
+}
+
 CPU::CPU(DataBus& mBus) : mBus(mBus)
 {
 }
