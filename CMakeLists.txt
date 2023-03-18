@@ -1,6 +1,22 @@
+set(PROJECT_NAME nes_emulator)
+
+# https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
+# Fix behavior of CMAKE_CXX_STANDARD when targeting macOS.
+if (POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
+endif ()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
 cmake_minimum_required(VERSION 3.24)
-project(nes_emulator)
-
 set(CMAKE_CXX_STANDARD 17)
+project(${PROJECT_NAME})
 
-add_executable(nes_emulator main.cpp CPU.cpp CPU.h DataBus.cpp DataBus.h)
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+
+find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
