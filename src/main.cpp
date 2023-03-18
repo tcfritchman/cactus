@@ -1,3 +1,5 @@
+#include "CPU.h"
+#include "DataBus.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
@@ -5,7 +7,12 @@
 
 int main()
 {
+	DataBus dataBus = DataBus();
+	CPU cpu(dataBus);
+	CPU::State* state = nullptr;
+
 	bool quit = false;
+	bool step = false;
 	SDL_Event event;
 
 	SDL_Init(SDL_INIT_VIDEO);
@@ -43,7 +50,20 @@ int main()
 			case SDL_QUIT:
 				quit = true;
 				break;
+			case SDL_KEYDOWN:
+				step = true;
+				break;
 			}
+		}
+
+		// Step the CPU if needed
+		if (step)
+		{
+			cpu.Cycle();
+			CPU::State s = cpu.GetState();
+			cpu.Print();
+			state = &s;
+			step = false;
 		}
 
 		// Start the Dear ImGui frame
