@@ -2,6 +2,7 @@
 #define NES_EMULATOR__DATABUS_H_
 
 #include <cstdint>
+#include "RAM.h"
 
 class DataBus
 {
@@ -9,9 +10,10 @@ class DataBus
 	uint8_t read(uint16_t address);
 	void write(uint8_t data, uint16_t address);
 
+	explicit DataBus(const RAM& mRam);
+
  private:
-	uint8_t m_test_ram[16] = {0xA9,0xEE,0x6D,0x00,0x08,0x00,0x00,0x00,
-							  0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
+	RAM mRam;
 };
 
 #endif //NES_EMULATOR__DATABUS_H_

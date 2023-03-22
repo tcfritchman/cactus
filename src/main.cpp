@@ -1,5 +1,6 @@
 #include "CPU.h"
 #include "DataBus.h"
+#include "RAM.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
@@ -7,9 +8,10 @@
 
 int main()
 {
-	DataBus dataBus = DataBus();
+	RAM ram = RAM();
+	DataBus dataBus = DataBus(ram);
 	CPU cpu(dataBus);
-	CPU::State* state = nullptr;
+	CPU::State* state;
 
 	bool quit = false;
 	bool step = false;
