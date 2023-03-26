@@ -4,21 +4,7 @@
 void CPU::Cycle()
 {
 	mCurrentInstruction = mBus.read(mRegPC);
-	Instruction* instruction;
-
-	switch (mCurrentInstruction)
-	{
-	case 0xA9:
-		instruction = &LDA_IMMEDIATE;
-		break;
-	case 0x6D:
-		instruction = &ADC_ABSOLUTE;
-		break;
-	default:
-		std::cout << "Illegal instruction" << std::endl;
-		exit(1);
-	}
-
+	Instruction* instruction = &INSTRUCTIONS[mCurrentInstruction];
 	instruction->addressing_mode();
 	instruction->operation();
 	mRegPC += instruction->cycles;
@@ -42,7 +28,7 @@ void CPU::Print() const
 		mRegA, mRegX, mRegY, mRegSP, mRegPC, mCarryFlag, mZeroFlag, mInterruptDisableFlag, mOverflowFlag, mNegativeFlag);
 }
 
-CPU::State CPU::GetState() const
+CPU::State CPU::GetState()
 {
 	uint8_t flags = (mCarryFlag)
 		& (mZeroFlag << 1)
@@ -51,6 +37,11 @@ CPU::State CPU::GetState() const
 		& (mNegativeFlag << 7);
 
 	return CPU::State {mRegA, mRegX, mRegY, flags, mRegPC, mRegSP};
+}
+
+CPU::Instruction CPU::GetInstruction(uint8_t op_code)
+{
+	return INSTRUCTIONS[op_code];
 }
 
 CPU::CPU(DataBus& mBus) : mBus(mBus)
@@ -171,4 +162,10 @@ void CPU::LDA()
 {
 	mRegA = mData;
  	// TODO: Flags
+}
+
+void CPU::OOPS()
+{
+	std::cout << "Illegal instruction" << std::endl;
+	exit(1);
 }

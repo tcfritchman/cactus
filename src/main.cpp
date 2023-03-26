@@ -11,7 +11,7 @@ int main()
 	RAM ram = RAM();
 	DataBus dataBus = DataBus(ram);
 	CPU cpu(dataBus);
-	CPU::State* state;
+	CPU::State state = cpu.GetState();
 
 	bool quit = false;
 	bool step = false;
@@ -62,9 +62,8 @@ int main()
 		if (step)
 		{
 			cpu.Cycle();
-			CPU::State s = cpu.GetState();
+			state = cpu.GetState();
 			cpu.Print();
-			state = &s;
 			step = false;
 		}
 
@@ -95,18 +94,34 @@ int main()
 						window_flags = ImGuiWindowFlags_NoDecoration;
 					ImGui::BeginChild("window_program", ImVec2(450, 360), true, window_flags);
 
-					ImGuiTableFlags flags = ImGuiTableFlags_None; //ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_RowBg | ImGuiTableFlags_ContextMenuInBody | ImGuiTableFlags_SizingStretchSame;
+					ImGuiTableFlags flags = ImGuiTableFlags_None;
 
-					if (ImGui::BeginTable("table_program", 3, flags))
+					if (ImGui::BeginTable("table_program", 4, flags))
 					{
+
+						uint16_t current_pc = state.PC;
+
 						for (int row = 0; row < 20; row++)
 						{
+							uint8_t op_code = ram.read(current_pc);
+							CPU::Instruction instruction = cpu.GetInstruction(op_code);
+
 							ImGui::TableNextRow();
-							for (int column = 0; column < 3; column++)
-							{
-								ImGui::TableSetColumnIndex(column);
-								ImGui::Text("Row %d Column %d", row, column);
+
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text(row == 0 ? "        ->" : "");
+							ImGui::TableSetColumnIndex(1);
+							ImGui::Text("%04x", current_pc);
+							ImGui::TableSetColumnIndex(2);
+							ImGui::Text("%02x", op_code);
+							ImGui::TableSetColumnIndex(3);
+							ImGui::Text("%s", instruction.mnemonic.c_str());
+
+							if (current_pc + instruction.bytes < current_pc) {
+								break;
 							}
+
+							current_pc += instruction.bytes;
 						}
 						ImGui::EndTable();
 					}
@@ -131,15 +146,36 @@ int main()
 
 					if (ImGui::BeginTable("table_registers", 2))
 					{
-						for (int row = 0; row < 6; row++)
-						{
-							ImGui::TableNextRow();
-							for (int column = 0; column < 2; column++)
-							{
-								ImGui::TableSetColumnIndex(column);
-								ImGui::Text("xx");
-							}
-						}
+						ImGui::TableNextColumn();
+						ImGui::Text("A");
+						ImGui::TableNextColumn();
+						ImGui::Text("%02x", state.A);
+
+						ImGui::TableNextColumn();
+						ImGui::Text("X");
+						ImGui::TableNextColumn();
+						ImGui::Text("%02x", state.X);
+
+						ImGui::TableNextColumn();
+						ImGui::Text("Y");
+						ImGui::TableNextColumn();
+						ImGui::Text("%02x", state.Y);
+
+						ImGui::TableNextColumn();
+						ImGui::Text("P");
+						ImGui::TableNextColumn();
+						ImGui::Text("%02x", state.P);
+
+						ImGui::TableNextColumn();
+						ImGui::Text("PC");
+						ImGui::TableNextColumn();
+						ImGui::Text("%04x", state.PC);
+
+						ImGui::TableNextColumn();
+						ImGui::Text("S");
+						ImGui::TableNextColumn();
+						ImGui::Text("%04x", state.SP);
+
 						ImGui::EndTable();
 					}
 
@@ -153,15 +189,31 @@ int main()
 
 					if (ImGui::BeginTable("table_flags", 2))
 					{
-						for (int row = 0; row < 6; row++)
-						{
-							ImGui::TableNextRow();
-							for (int column = 0; column < 2; column++)
-							{
-								ImGui::TableSetColumnIndex(column);
-								ImGui::Text("ff");
-							}
-						}
+						ImGui::TableNextColumn();
+						ImGui::Text("C");
+						ImGui::TableNextColumn();
+						ImGui::Text("%x", state.C());
+
+						ImGui::TableNextColumn();
+						ImGui::Text("Z");
+						ImGui::TableNextColumn();
+						ImGui::Text("%x", state.Z());
+
+						ImGui::TableNextColumn();
+						ImGui::Text("I");
+						ImGui::TableNextColumn();
+						ImGui::Text("%x", state.I());
+
+						ImGui::TableNextColumn();
+						ImGui::Text("V");
+						ImGui::TableNextColumn();
+						ImGui::Text("%x", state.V());
+
+						ImGui::TableNextColumn();
+						ImGui::Text("N");
+						ImGui::TableNextColumn();
+						ImGui::Text("%x", state.N());
+
 						ImGui::EndTable();
 					}
 
