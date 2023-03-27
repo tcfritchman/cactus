@@ -71,7 +71,7 @@ class CPU
 	uint8_t mRegX = 0;
 	uint8_t mRegY = 0;
 	uint16_t mRegPC = 0;
-	uint8_t mRegSP = 0;
+	uint8_t mRegSP = 0xFF;
 	bool mCarryFlag = false;
 	bool mZeroFlag = false;
 	bool mInterruptDisableFlag = false;
@@ -139,9 +139,13 @@ class CPU
 
 	// Shift
 	void ASL();
+	void ASL_A();
 	void LSR();
+	void LSR_A();
 	void ROL();
+	void ROL_A();
 	void ROR();
+	void ROR_A();
 
 	// Logic
 	void AND();
@@ -180,6 +184,11 @@ class CPU
 
 	// Unknown Instruction
 	void OOPS();
+
+	inline void ComputeZ(uint8_t value);
+	inline void ComputeN(uint8_t value);
+	inline uint8_t GetFlags() const;
+	inline void SetFlags(uint8_t status);
 
 	CPU::Instruction UNKNOWN_INSTR = {[this] { Implicit(); }, [this] { OOPS(); }, 1, "OOPS", 1};
 

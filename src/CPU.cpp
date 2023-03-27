@@ -24,19 +24,25 @@ void CPU::NMI()
 
 void CPU::Print() const
 {
-	std::printf("Registers:\nA: 0x%x, X: 0x%x, Y: 0x%x, SP: 0x%x, PC: 0x%x\nFlags:\nC: 0x%x, Z: 0x%x, I: 0x%x, V: 0x%x, N: 0x%x\n",
-		mRegA, mRegX, mRegY, mRegSP, mRegPC, mCarryFlag, mZeroFlag, mInterruptDisableFlag, mOverflowFlag, mNegativeFlag);
+	std::printf(
+		"Registers:\nA: 0x%x, X: 0x%x, Y: 0x%x, SP: 0x%x, PC: 0x%x\nFlags:\nC: 0x%x, Z: 0x%x, I: 0x%x, V: 0x%x, N: 0x%x\n",
+		mRegA,
+		mRegX,
+		mRegY,
+		mRegSP,
+		mRegPC,
+		mCarryFlag,
+		mZeroFlag,
+		mInterruptDisableFlag,
+		mOverflowFlag,
+		mNegativeFlag);
 }
 
 CPU::State CPU::GetState()
 {
-	uint8_t flags = (mCarryFlag)
-		& (mZeroFlag << 1)
-		& (mInterruptDisableFlag << 2)
-		& (mOverflowFlag << 6)
-		& (mNegativeFlag << 7);
+	uint8_t flags = CPU::GetFlags();
 
-	return CPU::State {mRegA, mRegX, mRegY, flags, mRegPC, mRegSP};
+	return CPU::State{ mRegA, mRegX, mRegY, flags, mRegPC, mRegSP };
 }
 
 CPU::Instruction CPU::GetInstruction(uint8_t op_code)
@@ -152,20 +158,306 @@ void CPU::IndirectIndexed()
 	mData = mBus.read(mAddr);
 }
 
-void CPU::ADC()
+void CPU::OOPS()
 {
-	mRegA += mData;
-	// TODO: Flags
+	std::cout << "Illegal instruction" << std::endl;
+	exit(1);
 }
 
 void CPU::LDA()
 {
 	mRegA = mData;
- 	// TODO: Flags
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
 }
 
-void CPU::OOPS()
+void CPU::LDX()
 {
-	std::cout << "Illegal instruction" << std::endl;
-	exit(1);
+	mRegX = mData;
+	ComputeZ(mRegX);
+	ComputeN(mRegX);
+}
+
+void CPU::LDY()
+{
+	mRegX = mData;
+	ComputeZ(mRegY);
+	ComputeN(mRegY);
+}
+
+inline void CPU::ComputeZ(uint8_t value)
+{
+	mZeroFlag = value == 0;
+}
+
+inline void CPU::ComputeN(uint8_t value)
+{
+	mNegativeFlag = value & 0x80;
+}
+
+inline uint8_t CPU::GetFlags() const
+{
+	return (mCarryFlag)
+		& (mZeroFlag << 1)
+		& (mInterruptDisableFlag << 2)
+		& (mOverflowFlag << 6)
+		& (mNegativeFlag << 7);
+}
+
+inline void CPU::SetFlags(uint8_t status)
+{
+	mCarryFlag = status & 0x1;
+	mZeroFlag = status & 0x2;
+	mInterruptDisableFlag = status & 0x4;
+	mOverflowFlag = status & 0x40;
+	mNegativeFlag = status & 0x80;
+}
+
+
+void CPU::STA()
+{
+	mBus.write(mRegA, mAddr);
+}
+
+void CPU::STX()
+{
+	mBus.write(mRegX, mAddr);
+}
+
+void CPU::STY()
+{
+	mBus.write(mRegY, mAddr);
+}
+
+void CPU::TAX()
+{
+	mRegX = mRegA;
+	ComputeZ(mRegX);
+	ComputeN(mRegX);
+}
+
+void CPU::TAY()
+{
+	mRegY = mRegA;
+	ComputeZ(mRegY);
+	ComputeN(mRegY);
+}
+
+void CPU::TXA()
+{
+	mRegA = mRegX;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::TYA()
+{
+	mRegA = mRegY;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::TSX()
+{
+	mRegX = mRegSP;
+	ComputeZ(mRegX);
+	ComputeN(mRegX);
+}
+
+void CPU::TXS()
+{
+	mRegSP = mRegX;
+}
+
+void CPU::PHA()
+{
+	mBus.write(mRegA, mRegSP);
+	mRegSP--;
+}
+
+void CPU::PHP()
+{
+	uint8_t status = GetFlags();
+	mBus.write(status, mRegSP);
+	mRegSP--;
+}
+
+void CPU::PLA()
+{
+	mRegSP++;
+	mRegA = mBus.read(mRegSP);
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::PLP()
+{
+	mRegSP++;
+	uint8_t status = mBus.read(mRegSP);
+	SetFlags(status);
+}
+
+void CPU::ADC()
+{
+	bool isCarry = (uint16_t)mRegA + mData + mCarryFlag > 0xFF;
+	bool isOverflow = 0; // TODO
+
+	mRegA += mData;
+	mRegA += mCarryFlag;
+
+	mCarryFlag = isCarry;
+	mOverflowFlag = isOverflow;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::SBC()
+{
+	bool isCarry = (uint16_t)mRegA - mData - (1 - mCarryFlag) > 0xFF;
+	bool isOverflow = 0; // TODO
+
+	mRegA -= mData;
+	mRegA -= 1 - mCarryFlag;
+
+	mCarryFlag = isCarry;
+	mOverflowFlag = isOverflow;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::CMP()
+{
+	uint8_t result = mRegA - mData;
+	ComputeZ(result);
+	ComputeN(result);
+	mCarryFlag = mRegA >= mData;
+}
+
+void CPU::CPX()
+{
+	uint8_t result = mRegX - mData;
+	ComputeZ(result);
+	ComputeN(result);
+	mCarryFlag = mRegX >= mData;
+}
+
+void CPU::CPY()
+{
+	uint8_t result = mRegY - mData;
+	ComputeZ(result);
+	ComputeN(result);
+	mCarryFlag = mRegY >= mData;
+}
+
+void CPU::INC()
+{
+	uint8_t result = mData + 1;
+	mBus.write(result, mAddr);
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::INX()
+{
+	mRegX++;
+	ComputeZ(mRegX);
+	ComputeN(mRegX);
+}
+
+void CPU::INY()
+{
+	mRegY++;
+	ComputeZ(mRegY);
+	ComputeN(mRegY);
+}
+
+void CPU::DEC()
+{
+	uint8_t result = mData - 1;
+	mBus.write(result, mAddr);
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::DEX()
+{
+	mRegX--;
+	ComputeZ(mRegX);
+	ComputeN(mRegX);
+}
+
+void CPU::DEY()
+{
+	mRegY--;
+	ComputeZ(mRegY);
+	ComputeN(mRegY);
+}
+
+void CPU::ASL()
+{
+	bool isCarry = mData & 0x80;
+	uint8_t result = mData << 1;
+	mBus.write(result, mAddr);
+	mCarryFlag = isCarry;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::LSR()
+{
+	bool isCarry = mData & 0x1;
+	uint8_t result = mData >> 1;
+	mBus.write(result, mAddr);
+	mCarryFlag = isCarry;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::ROL()
+{
+	uint8_t hiBit = mData & 0x80;
+	uint8_t result = (mData << 1) | (hiBit >> 7);
+	mBus.write(result, mAddr);
+	mCarryFlag = hiBit != 0;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::ROR()
+{
+	uint8_t loBit = mData & 0x1;
+	uint8_t result = (mData >> 1) | (loBit << 7);
+	mBus.write(result, mAddr);
+	mCarryFlag = loBit != 0;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::AND()
+{
+	mRegA &= mData;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::EOR()
+{
+	mRegA ^= mData;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::ORA()
+{
+	mRegA |= mData;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
+}
+
+void CPU::BIT()
+{
+	uint8_t result = mRegA & mData;
+	ComputeZ(result);
+	ComputeN(result);
+	mOverflowFlag = result & 0x40; // bit 6 is set
 }
