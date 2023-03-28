@@ -1,5 +1,6 @@
 #include <iostream>
 #include "CPU.h"
+#include "Util.h"
 
 void CPU::Cycle()
 {
@@ -212,7 +213,6 @@ inline void CPU::SetFlags(uint8_t status)
 	mOverflowFlag = status & 0x40;
 	mNegativeFlag = status & 0x80;
 }
-
 
 void CPU::STA()
 {
@@ -460,4 +460,166 @@ void CPU::BIT()
 	ComputeZ(result);
 	ComputeN(result);
 	mOverflowFlag = result & 0x40; // bit 6 is set
+}
+
+void CPU::JMP()
+{
+	mRegPC = mAddr;
+}
+
+void CPU::JSR()
+{
+	uint16_t return_addr = mRegPC - 1; // Assuming PC is advanced before this function call!
+	uint8_t return_addr_hi = nes::hi_byte(return_addr);
+	uint8_t return_addr_lo = nes::lo_byte(return_addr);
+	mBus.write(return_addr_hi, mRegSP);
+	mRegSP--;
+	mBus.write(return_addr_lo, mRegSP);
+	mRegSP--;
+	mRegPC = mAddr;
+}
+
+void CPU::RTS()
+{
+	mRegSP++;
+	uint8_t return_addr_lo = mBus.read(mRegSP);
+	mRegSP++;
+	uint8_t return_addr_hi = mBus.read(mRegSP);
+	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
+	mRegPC = return_addr;
+}
+
+void CPU::BCC()
+{
+	if (!mCarryFlag)
+	{
+		// Assuming PC is advanced before this function call!
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BCS()
+{
+	if (mCarryFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BEQ()
+{
+	if (mZeroFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BMI()
+{
+	if (mNegativeFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BNE()
+{
+	if (!mZeroFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BPL()
+{
+	if (!mNegativeFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BVC()
+{
+	if (!mOverflowFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::BVS()
+{
+	if (mOverflowFlag)
+	{
+		mRegPC = mAddr;
+	}
+}
+
+void CPU::CLC()
+{
+	mCarryFlag = false;
+}
+
+void CPU::CLD()
+{
+	// No decimal mode
+}
+
+void CPU::CLI()
+{
+	mInterruptDisableFlag = false;
+}
+
+void CPU::CLV()
+{
+	mOverflowFlag = false;
+}
+
+void CPU::SEC()
+{
+	mCarryFlag = true;
+}
+
+void CPU::SED()
+{
+	// No decimal mode
+}
+
+void CPU::SEI()
+{
+	mInterruptDisableFlag = true;
+}
+
+void CPU::BRK()
+{
+	uint16_t return_addr = mRegPC - 1; // Assuming PC is advanced before this function call!
+	uint8_t return_addr_hi = nes::hi_byte(return_addr);
+	uint8_t return_addr_lo = nes::lo_byte(return_addr);
+	uint8_t status = GetFlags();
+	nes::set_bit(&status, 4); // How to handle IRQ/NMI not setting this bit
+	nes::set_bit(&status, 5);
+	mBus.write(return_addr_hi, mRegSP);
+	mRegSP--;
+	mBus.write(return_addr_lo, mRegSP);
+	mRegSP--;
+	mBus.write(status, mRegSP);
+	mRegSP--;
+	mRegPC = mAddr;
+}
+
+void CPU::NOP()
+{
+	// Literally do nothing
+}
+
+void CPU::RTI()
+{
+	mRegSP++;
+	uint8_t status = mBus.read(mRegSP);
+	mRegSP++;
+	uint8_t return_addr_lo = mBus.read(mRegSP);
+	mRegSP++;
+	uint8_t return_addr_hi = mBus.read(mRegSP);
+	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
+	mRegPC = return_addr;
+	SetFlags(status);
 }
