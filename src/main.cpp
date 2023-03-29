@@ -27,7 +27,8 @@ int main()
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
@@ -78,7 +79,8 @@ int main()
 			bool* p_open = nullptr;
 
 			const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 20), ImGuiCond_Once);
+			ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 20),
+				ImGuiCond_Once);
 			ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
 
 			ImGui::Begin("CPU Debugger", p_open, window_flags);
@@ -104,7 +106,7 @@ int main()
 						for (int row = 0; row < 20; row++)
 						{
 							uint8_t op_code = ram.read(current_pc);
-							CPU::Operation operation = cpu.GetOperation(op_code);
+							Operation operation = cpu.GetOperation(op_code);
 
 							ImGui::TableNextRow();
 
@@ -117,7 +119,8 @@ int main()
 							ImGui::TableSetColumnIndex(3);
 							ImGui::Text("%s", operation.mnemonic.c_str());
 
-							if (current_pc + operation.bytes < current_pc) {
+							if (current_pc + operation.bytes < current_pc)
+							{
 								break;
 							}
 
@@ -238,7 +241,11 @@ int main()
 
 		// Rendering
 		SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-		SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
+		SDL_SetRenderDrawColor(renderer,
+			(Uint8)(clear_color.x * 255),
+			(Uint8)(clear_color.y * 255),
+			(Uint8)(clear_color.z * 255),
+			(Uint8)(clear_color.w * 255));
 		SDL_RenderClear(renderer);
 		ImGui::Render();
 		ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());

@@ -4,11 +4,11 @@
 
 void CPU::Cycle()
 {
-	mCurrentOperation = mBus.read(mRegPC);
-	Operation* operation = &OPERATIONS[mCurrentOperation];
-	operation->addressing_mode();
-	operation->operation();
-	mRegPC += operation->cycles;
+	mCurrentOpCode = mBus.read(mRegPC);
+	Operation operation = OPERATIONS[mCurrentOpCode];
+	ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
+	INSTRUCTION_MAP.find(operation.instruction)->second();
+	mRegPC += operation.bytes;
 }
 void CPU::IRQ()
 {
@@ -46,7 +46,7 @@ CPU::State CPU::GetState()
 	return CPU::State{ mRegA, mRegX, mRegY, flags, mRegPC, mRegSP };
 }
 
-CPU::Operation CPU::GetOperation(uint8_t op_code)
+Operation CPU::GetOperation(uint8_t op_code)
 {
 	return OPERATIONS[op_code];
 }

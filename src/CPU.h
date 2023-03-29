@@ -1,12 +1,14 @@
-#ifndef NES_EMULATOR__CPU_H_
-#define NES_EMULATOR__CPU_H_
+#ifndef NES_EMULATOR_SRC_CPU_H_
+#define NES_EMULATOR_SRC_CPU_H_
 
 #include <string>
 #include <cstdint>
 #include <functional>
 #include <unordered_map>
 #include <vector>
+#include <unordered_map>
 #include "DataBus.h"
+#include "Operation.h"
 
 class CPU
 {
@@ -42,16 +44,6 @@ class CPU
 		}
 	};
 
-	struct Operation
-	{
-	 public:
-		std::function<void()> addressing_mode;
-		std::function<void()> operation;
-		size_t cycles;
-		std::string mnemonic;
-		size_t bytes;
-	};
-
 	void Cycle();
 	void IRQ();
 	void Reset();
@@ -78,7 +70,7 @@ class CPU
 	bool mOverflowFlag = false;
 	bool mNegativeFlag = false;
 
-	uint8_t mCurrentOperation = 0;
+	uint8_t mCurrentOpCode = 0;
 	uint8_t mAddrHi = 0;
 	uint8_t mAddrLo = 0;
 	uint16_t mAddr = 0;
@@ -99,7 +91,7 @@ class CPU
 	void IndexedIndirect();
 	void IndirectIndexed();
 
-	// Operation operations
+	// OperationA operations
 	// Load/Store/Transfer
 	void LDA();
 	void LDX();
@@ -182,7 +174,7 @@ class CPU
 	void NOP();
 	void RTI();
 
-	// Unknown Operation
+	// Unknown OperationA
 	void OOPS();
 
 	inline void ComputeZ(uint8_t value);
@@ -190,9 +182,86 @@ class CPU
 	inline uint8_t GetFlags() const;
 	inline void SetFlags(uint8_t status);
 
-	CPU::Operation UNKNOWN_INSTR = { [this] { Implicit(); }, [this] { OOPS(); }, 1, "OOPS", 1};
+	const std::unordered_map<Operation::AddressingMode, std::function<void()>> ADDRESSING_MODE_MAP = {
+		{ Operation::AddressingMode::UNKNOWN, [this] { Implicit(); } },
+		{ Operation::AddressingMode::IMPLICIT, [this] { Implicit(); } },
+		{ Operation::AddressingMode::ACCUMULATOR, [this] { Accumulator(); } },
+		{ Operation::AddressingMode::IMMEDIATE, [this] { Immediate(); } },
+		{ Operation::AddressingMode::ZERO_PAGE, [this] { ZeroPage(); } },
+		{ Operation::AddressingMode::ZERO_PAGE_X, [this] { ZeroPageX(); } },
+		{ Operation::AddressingMode::ZERO_PAGE_Y, [this] { ZeroPageY(); } },
+		{ Operation::AddressingMode::RELATIVE, [this] { Relative(); } },
+		{ Operation::AddressingMode::ABSOLUTE, [this] { Absolute(); } },
+		{ Operation::AddressingMode::ABSOLUTE_X, [this] { AbsoluteX(); } },
+		{ Operation::AddressingMode::ABSOLUTE_Y, [this] { AbsoluteY(); } },
+		{ Operation::AddressingMode::INDIRECT, [this] { Indirect(); } },
+		{ Operation::AddressingMode::INDEXED_INDIRECT, [this] { IndexedIndirect(); } },
+		{ Operation::AddressingMode::INDIRECT_INDEXED, [this] { IndirectIndexed(); } }
+	};
 
-	std::vector<CPU::Operation> OPERATIONS = {
+	const std::unordered_map<Operation::Instruction, std::function<void()>> INSTRUCTION_MAP = {
+		{ Operation::Instruction::UNKNOWN, [this] { OOPS(); } },
+		{ Operation::Instruction::LDA, [this] { LDA(); } },
+		{ Operation::Instruction::LDX, [this] { LDX(); } },
+		{ Operation::Instruction::LDY, [this] { LDY(); } },
+		{ Operation::Instruction::STA, [this] { STA(); } },
+		{ Operation::Instruction::STX, [this] { STX(); } },
+		{ Operation::Instruction::STY, [this] { STY(); } },
+		{ Operation::Instruction::TAX, [this] { TAX(); } },
+		{ Operation::Instruction::TAY, [this] { TAY(); } },
+		{ Operation::Instruction::TXA, [this] { TXA(); } },
+		{ Operation::Instruction::TYA, [this] { TYA(); } },
+		{ Operation::Instruction::TSX, [this] { TSX(); } },
+		{ Operation::Instruction::TXS, [this] { TXS(); } },
+		{ Operation::Instruction::PHA, [this] { PHA(); } },
+		{ Operation::Instruction::PHP, [this] { PHP(); } },
+		{ Operation::Instruction::PLA, [this] { PLA(); } },
+		{ Operation::Instruction::PLP, [this] { PLP(); } },
+		{ Operation::Instruction::AND, [this] { AND(); } },
+		{ Operation::Instruction::EOR, [this] { EOR(); } },
+		{ Operation::Instruction::ORA, [this] { ORA(); } },
+		{ Operation::Instruction::BIT, [this] { BIT(); } },
+		{ Operation::Instruction::ADC, [this] { ADC(); } },
+		{ Operation::Instruction::SBC, [this] { SBC(); } },
+		{ Operation::Instruction::CMP, [this] { CMP(); } },
+		{ Operation::Instruction::CPX, [this] { CPX(); } },
+		{ Operation::Instruction::CPY, [this] { CPY(); } },
+		{ Operation::Instruction::INC, [this] { INC(); } },
+		{ Operation::Instruction::INX, [this] { INX(); } },
+		{ Operation::Instruction::INY, [this] { INY(); } },
+		{ Operation::Instruction::DEC, [this] { DEC(); } },
+		{ Operation::Instruction::DEX, [this] { DEX(); } },
+		{ Operation::Instruction::DEY, [this] { DEY(); } },
+		{ Operation::Instruction::ASL, [this] { ASL(); } },
+		{ Operation::Instruction::LSR, [this] { LSR(); } },
+		{ Operation::Instruction::ROL, [this] { ROL(); } },
+		{ Operation::Instruction::ROR, [this] { ROR(); } },
+		{ Operation::Instruction::JMP, [this] { JMP(); } },
+		{ Operation::Instruction::JSR, [this] { JSR(); } },
+		{ Operation::Instruction::RTS, [this] { RTS(); } },
+		{ Operation::Instruction::BCC, [this] { BCC(); } },
+		{ Operation::Instruction::BCS, [this] { BCS(); } },
+		{ Operation::Instruction::BEQ, [this] { BEQ(); } },
+		{ Operation::Instruction::BMI, [this] { BMI(); } },
+		{ Operation::Instruction::BNE, [this] { BNE(); } },
+		{ Operation::Instruction::BPL, [this] { BPL(); } },
+		{ Operation::Instruction::BVC, [this] { BVC(); } },
+		{ Operation::Instruction::BVS, [this] { BVS(); } },
+		{ Operation::Instruction::CLC, [this] { CLC(); } },
+		{ Operation::Instruction::CLD, [this] { CLD(); } },
+		{ Operation::Instruction::CLI, [this] { CLI(); } },
+		{ Operation::Instruction::CLV, [this] { CLV(); } },
+		{ Operation::Instruction::SEC, [this] { SEC(); } },
+		{ Operation::Instruction::SED, [this] { SED(); } },
+		{ Operation::Instruction::SEI, [this] { SEI(); } },
+		{ Operation::Instruction::BRK, [this] { BRK(); } },
+		{ Operation::Instruction::NOP, [this] { NOP(); } },
+		{ Operation::Instruction::RTI, [this] { RTI(); } }
+	};
+
+	const Operation UNKNOWN_INSTR = { Operation::AddressingMode::UNKNOWN, Operation::Instruction::UNKNOWN, 1 };
+
+	const std::vector<Operation> OPERATIONS = {
 
 		// 0x00
 		UNKNOWN_INSTR,
@@ -316,7 +385,7 @@ class CPU
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
-		{[this] { Absolute(); }, [this] { ADC(); }, 3, "ADC", 3},
+		{Operation::AddressingMode::ABSOLUTE, Operation::Instruction::ADC, 3},
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
 
@@ -384,7 +453,7 @@ class CPU
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
-		{[this] { Immediate(); }, [this] { LDA(); }, 2, "LDA", 2},
+		{Operation::AddressingMode::IMMEDIATE, Operation::Instruction::LDA, 2},
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
@@ -484,4 +553,4 @@ class CPU
 	};
 };
 
-#endif //NES_EMULATOR__CPU_H_
+#endif //NES_EMULATOR_SRC_CPU_H_

@@ -1,5 +1,5 @@
-#ifndef NES_EMULATOR__DATABUS_H_
-#define NES_EMULATOR__DATABUS_H_
+#ifndef NES_EMULATOR_SRC_DATABUS_H_
+#define NES_EMULATOR_SRC_DATABUS_H_
 
 #include <cstdint>
 #include "RAM.h"
@@ -16,4 +16,4 @@ class DataBus
 	RAM mRam;
 };
 
-#endif //NES_EMULATOR__DATABUS_H_
+#endif //NES_EMULATOR_SRC_DATABUS_H_
