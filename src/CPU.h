@@ -42,7 +42,7 @@ class CPU
 		}
 	};
 
-	struct Instruction
+	struct Operation
 	{
 	 public:
 		std::function<void()> addressing_mode;
@@ -59,7 +59,7 @@ class CPU
 
 	void Print() const;
 	State GetState();
-	Instruction GetInstruction(uint8_t op_code);
+	Operation GetOperation(uint8_t op_code);
 
 	explicit CPU(DataBus& mBus);
 	CPU() = delete;
@@ -78,7 +78,7 @@ class CPU
 	bool mOverflowFlag = false;
 	bool mNegativeFlag = false;
 
-	uint8_t mCurrentInstruction = 0;
+	uint8_t mCurrentOperation = 0;
 	uint8_t mAddrHi = 0;
 	uint8_t mAddrLo = 0;
 	uint16_t mAddr = 0;
@@ -99,7 +99,7 @@ class CPU
 	void IndexedIndirect();
 	void IndirectIndexed();
 
-	// Instruction operations
+	// Operation operations
 	// Load/Store/Transfer
 	void LDA();
 	void LDX();
@@ -182,7 +182,7 @@ class CPU
 	void NOP();
 	void RTI();
 
-	// Unknown Instruction
+	// Unknown Operation
 	void OOPS();
 
 	inline void ComputeZ(uint8_t value);
@@ -190,9 +190,9 @@ class CPU
 	inline uint8_t GetFlags() const;
 	inline void SetFlags(uint8_t status);
 
-	CPU::Instruction UNKNOWN_INSTR = {[this] { Implicit(); }, [this] { OOPS(); }, 1, "OOPS", 1};
+	CPU::Operation UNKNOWN_INSTR = { [this] { Implicit(); }, [this] { OOPS(); }, 1, "OOPS", 1};
 
-	std::vector<CPU::Instruction> INSTRUCTIONS = {
+	std::vector<CPU::Operation> OPERATIONS = {
 
 		// 0x00
 		UNKNOWN_INSTR,

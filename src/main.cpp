@@ -104,7 +104,7 @@ int main()
 						for (int row = 0; row < 20; row++)
 						{
 							uint8_t op_code = ram.read(current_pc);
-							CPU::Instruction instruction = cpu.GetInstruction(op_code);
+							CPU::Operation operation = cpu.GetOperation(op_code);
 
 							ImGui::TableNextRow();
 
@@ -115,13 +115,13 @@ int main()
 							ImGui::TableSetColumnIndex(2);
 							ImGui::Text("%02x", op_code);
 							ImGui::TableSetColumnIndex(3);
-							ImGui::Text("%s", instruction.mnemonic.c_str());
+							ImGui::Text("%s", operation.mnemonic.c_str());
 
-							if (current_pc + instruction.bytes < current_pc) {
+							if (current_pc + operation.bytes < current_pc) {
 								break;
 							}
 
-							current_pc += instruction.bytes;
+							current_pc += operation.bytes;
 						}
 						ImGui::EndTable();
 					}
