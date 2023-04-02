@@ -10,14 +10,17 @@ void CPU::Cycle()
 	INSTRUCTION_MAP.find(operation.instruction)->second();
 	mRegPC += operation.bytes;
 }
+
 void CPU::IRQ()
 {
 	// TODO
 }
+
 void CPU::Reset()
 {
 	// TODO
 }
+
 void CPU::NMI()
 {
 	// TODO
@@ -622,4 +625,29 @@ void CPU::RTI()
 	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
 	mRegPC = return_addr;
 	SetFlags(status);
+}
+
+bool CPU::State::C() const
+{
+	return nes::test_bit(P, 0);
+}
+
+bool CPU::State::Z() const
+{
+	return nes::test_bit(P, 1);
+}
+
+bool CPU::State::I() const
+{
+	return nes::test_bit(P, 2);
+}
+
+bool CPU::State::V() const
+{
+	return nes::test_bit(P, 6);
+}
+
+bool CPU::State::N() const
+{
+	return nes::test_bit(P, 7);
 }
