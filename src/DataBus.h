@@ -10,7 +10,7 @@ class DataBus
 	uint8_t read(uint16_t address);
 	void write(uint8_t data, uint16_t address);
 
-	explicit DataBus(const RAM& mRam);
+	explicit DataBus(RAM  mRam);
 
  private:
 	RAM mRam;

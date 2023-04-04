@@ -8,8 +8,7 @@
 
 int main()
 {
-	RAM ram = RAM();
-	DataBus dataBus = DataBus(ram);
+	auto dataBus = DataBus(RAM());
 	CPU cpu(dataBus);
 	CPU::State state = cpu.GetState();
 
@@ -19,7 +18,7 @@ int main()
 
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window* window = SDL_CreateWindow("Untitled NES Emulator",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 900, 600, 0);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
 	// ImGui Stuff
@@ -31,13 +30,13 @@ int main()
 	(void)io;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+	ImGui::StyleColorsLight();
+	// Background color
+	ImVec4 clear_color = ImVec4(56.0f, 56.0f, 56.0f, 255.0f);
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer_Init(renderer);
-
-	ImVec4 clear_color = ImVec4(242.0f, 242.0f, 242.0f, 255.0f);
 
 	while (!quit)
 	{
@@ -104,7 +103,7 @@ int main()
 
 						for (int row = 0; row < 20; row++)
 						{
-							uint8_t op_code = ram.read(current_pc);
+							uint8_t op_code = dataBus.read(current_pc);
 							Operation operation = cpu.GetOperation(op_code);
 
 							if (current_pc + operation.bytes - 1 < current_pc)
@@ -130,14 +129,14 @@ int main()
 							}
 							else if (operation.bytes == 2)
 							{
-								ImGui::Text("%02x %02x", op_code, ram.read(current_pc + 1));
+								ImGui::Text("%02x %02x", op_code, dataBus.read(current_pc + 1));
 							}
 							else
 							{
 								ImGui::Text("%02x %02x %02x",
 									op_code,
-									ram.read(current_pc + 1),
-									ram.read(current_pc + 2));
+									dataBus.read(current_pc + 1),
+									dataBus.read(current_pc + 2));
 							}
 
 							// Disassembled Instruction
@@ -153,49 +152,49 @@ int main()
 								ImGui::Text("%s A", operation.mnemonic.c_str());
 								break;
 							case Operation::AddressingMode::IMMEDIATE:
-								ImGui::Text("%s #%d", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s #%d", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ZERO_PAGE:
-								ImGui::Text("%s $%02x", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s $%02x", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ZERO_PAGE_X:
-								ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ZERO_PAGE_Y:
-								ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::RELATIVE:
-								ImGui::Text("%s *$%+d", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s *$%+d", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ABSOLUTE:
 								ImGui::Text("%s $%02x%02x",
 									operation.mnemonic.c_str(),
-									ram.read(current_pc + 2),
-									ram.read(current_pc + 1));
+									dataBus.read(current_pc + 2),
+									dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ABSOLUTE_X:
 								ImGui::Text("%s $%02x%02x,X",
 									operation.mnemonic.c_str(),
-									ram.read(current_pc + 2),
-									ram.read(current_pc + 1));
+									dataBus.read(current_pc + 2),
+									dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ABSOLUTE_Y:
 								ImGui::Text("%s $%02x%02x,Y",
 									operation.mnemonic.c_str(),
-									ram.read(current_pc + 2),
-									ram.read(current_pc + 1));
+									dataBus.read(current_pc + 2),
+									dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::INDIRECT:
 								ImGui::Text("%s ($%02x%02x)",
 									operation.mnemonic.c_str(),
-									ram.read(current_pc + 2),
-									ram.read(current_pc + 1));
+									dataBus.read(current_pc + 2),
+									dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::INDEXED_INDIRECT:
-								ImGui::Text("%s ($%02x,X)", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s ($%02x,X)", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::INDIRECT_INDEXED:
-								ImGui::Text("%s ($%02x),Y", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								ImGui::Text("%s ($%02x),Y", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
 								break;
 							}
 
@@ -313,6 +312,52 @@ int main()
 
 			ImGui::End();
 		}
+
+		// Create Memory Debug Window
+		{
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
+			bool* p_open = nullptr;
+
+			const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 700, main_viewport->WorkPos.y + 20),
+				ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
+
+			ImGui::Begin("Memory", p_open, window_flags);
+
+			uint16_t start_addr = 0x200;
+
+			if (ImGui::BeginTable("table_memory", 3))
+			{
+				for (int row = 0; row < 20; row++)
+				{
+					uint16_t addr = start_addr + row;
+
+					if (addr < start_addr) {
+						break;
+					}
+
+					ImGui::TableNextRow();
+
+					uint8_t data = dataBus.read(addr);
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%04x", addr);
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%02x", data);
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%d", data);
+				}
+
+
+				ImGui::EndTable();
+			}
+
+			ImGui::End();
+		}
+
 
 		// Rendering
 		SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);

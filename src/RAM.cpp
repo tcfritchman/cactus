@@ -3,7 +3,7 @@
 
 uint8_t RAM::read(uint16_t address)
 {
-	if (address >= 0 && address < 16)
+	if (address >= 0 && address < 0x400)
 	{
 		return m_test_ram[address];
 	} else
@@ -14,7 +14,7 @@ uint8_t RAM::read(uint16_t address)
 
 void RAM::write(uint8_t data, uint16_t address)
 {
-	if (address >= 0 && address < 16)
+	if (address >= 0 && address < 0x400)
 	{
 		m_test_ram[address] = data;
 	} else
