@@ -26,22 +26,6 @@ void CPU::NMI()
 	// TODO
 }
 
-void CPU::Print() const
-{
-	std::printf(
-		"Registers:\nA: 0x%x, X: 0x%x, Y: 0x%x, SP: 0x%x, PC: 0x%x\nFlags:\nC: 0x%x, Z: 0x%x, I: 0x%x, V: 0x%x, N: 0x%x\n",
-		mRegA,
-		mRegX,
-		mRegY,
-		mRegSP,
-		mRegPC,
-		mCarryFlag,
-		mZeroFlag,
-		mInterruptDisableFlag,
-		mOverflowFlag,
-		mNegativeFlag);
-}
-
 CPU::State CPU::GetState()
 {
 	uint8_t flags = CPU::GetFlags();

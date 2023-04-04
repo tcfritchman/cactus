@@ -34,7 +34,6 @@ class CPU
 	void Reset();
 	void NMI();
 
-	void Print() const;
 	State GetState();
 	Operation GetOperation(uint8_t op_code);
 

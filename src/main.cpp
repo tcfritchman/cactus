@@ -64,7 +64,6 @@ int main()
 		{
 			cpu.Cycle();
 			state = cpu.GetState();
-			cpu.Print();
 			step = false;
 		}
 
@@ -108,19 +107,95 @@ int main()
 							uint8_t op_code = ram.read(current_pc);
 							Operation operation = cpu.GetOperation(op_code);
 
+							if (current_pc + operation.bytes - 1 < current_pc)
+							{
+								break;
+							}
+
 							ImGui::TableNextRow();
 
+							// Pointer
 							ImGui::TableSetColumnIndex(0);
 							ImGui::Text(row == 0 ? "        ->" : "");
+
+							// Address
 							ImGui::TableSetColumnIndex(1);
 							ImGui::Text("%04x", current_pc);
-							ImGui::TableSetColumnIndex(2);
-							ImGui::Text("%02x", op_code);
-							ImGui::TableSetColumnIndex(3);
-							ImGui::Text("%s", operation.mnemonic.c_str());
 
-							if (current_pc + operation.bytes < current_pc)
+							// Hex
+							ImGui::TableSetColumnIndex(2);
+							if (operation.bytes == 1)
 							{
+								ImGui::Text("%02x", op_code);
+							}
+							else if (operation.bytes == 2)
+							{
+								ImGui::Text("%02x %02x", op_code, ram.read(current_pc + 1));
+							}
+							else
+							{
+								ImGui::Text("%02x %02x %02x",
+									op_code,
+									ram.read(current_pc + 1),
+									ram.read(current_pc + 2));
+							}
+
+							// Disassembled Instruction
+							ImGui::TableSetColumnIndex(3);
+							switch (operation.addressing_mode)
+							{
+
+							case Operation::AddressingMode::UNKNOWN:
+							case Operation::AddressingMode::IMPLICIT:
+								ImGui::Text("%s", operation.mnemonic.c_str());
+								break;
+							case Operation::AddressingMode::ACCUMULATOR:
+								ImGui::Text("%s A", operation.mnemonic.c_str());
+								break;
+							case Operation::AddressingMode::IMMEDIATE:
+								ImGui::Text("%s #%d", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::ZERO_PAGE:
+								ImGui::Text("%s $%02x", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::ZERO_PAGE_X:
+								ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::ZERO_PAGE_Y:
+								ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::RELATIVE:
+								ImGui::Text("%s *$%+d", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::ABSOLUTE:
+								ImGui::Text("%s $%02x%02x",
+									operation.mnemonic.c_str(),
+									ram.read(current_pc + 2),
+									ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::ABSOLUTE_X:
+								ImGui::Text("%s $%02x%02x,X",
+									operation.mnemonic.c_str(),
+									ram.read(current_pc + 2),
+									ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::ABSOLUTE_Y:
+								ImGui::Text("%s $%02x%02x,Y",
+									operation.mnemonic.c_str(),
+									ram.read(current_pc + 2),
+									ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::INDIRECT:
+								ImGui::Text("%s ($%02x%02x)",
+									operation.mnemonic.c_str(),
+									ram.read(current_pc + 2),
+									ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::INDEXED_INDIRECT:
+								ImGui::Text("%s ($%02x,X)", operation.mnemonic.c_str(), ram.read(current_pc + 1));
+								break;
+							case Operation::AddressingMode::INDIRECT_INDEXED:
+								ImGui::Text("%s ($%02x),Y", operation.mnemonic.c_str(), ram.read(current_pc + 1));
 								break;
 							}
 
