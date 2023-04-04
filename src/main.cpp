@@ -325,7 +325,17 @@ int main()
 
 			ImGui::Begin("Memory", p_open, window_flags);
 
-			uint16_t start_addr = 0x200;
+			static int start_addr = 0x200;
+
+			ImGui::InputInt("##", &start_addr);
+
+			if (start_addr < 0) {
+				start_addr = 0;
+			}
+
+			if (start_addr > 0x400) {
+				start_addr = 0x400;
+			}
 
 			if (ImGui::BeginTable("table_memory", 3))
 			{
