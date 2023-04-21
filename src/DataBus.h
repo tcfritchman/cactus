@@ -10,10 +10,12 @@ class DataBus
 	uint8_t read(uint16_t address);
 	void write(uint8_t data, uint16_t address);
 
-	explicit DataBus(RAM  mRam);
+	explicit DataBus(RAM* mRam);
+	DataBus() = delete;
+	virtual ~DataBus();
 
  private:
-	RAM mRam;
+	RAM* mRam;
 };
 
 #endif //NES_EMULATOR_SRC_DATABUS_H_

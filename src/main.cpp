@@ -4,13 +4,16 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
+#include "NES.h"
 #include <SDL.h>
 
 int main()
 {
-	auto dataBus = DataBus(RAM());
-	CPU cpu(dataBus);
-	CPU::State state = cpu.GetState();
+//	auto ram = RAM();
+//	auto dataBus = DataBus(ram);
+//	CPU cpu(dataBus);
+	NES* nes = new NES();
+	CPU::State state = nes->cpu->GetState();
 
 	bool quit = false;
 	bool step = false;
@@ -61,8 +64,8 @@ int main()
 		// Step the CPU if needed
 		if (step)
 		{
-			cpu.Cycle();
-			state = cpu.GetState();
+			nes->cpu->Cycle();
+			state = nes->cpu->GetState();
 			step = false;
 		}
 
@@ -103,8 +106,8 @@ int main()
 
 						for (int row = 0; row < 20; row++)
 						{
-							uint8_t op_code = dataBus.read(current_pc);
-							Operation operation = cpu.GetOperation(op_code);
+							uint8_t op_code = nes->dataBus->read(current_pc);
+							Operation operation = nes->cpu->GetOperation(op_code);
 
 							if (current_pc + operation.bytes - 1 < current_pc)
 							{
@@ -129,14 +132,14 @@ int main()
 							}
 							else if (operation.bytes == 2)
 							{
-								ImGui::Text("%02x %02x", op_code, dataBus.read(current_pc + 1));
+								ImGui::Text("%02x %02x", op_code, nes->dataBus->read(current_pc + 1));
 							}
 							else
 							{
 								ImGui::Text("%02x %02x %02x",
 									op_code,
-									dataBus.read(current_pc + 1),
-									dataBus.read(current_pc + 2));
+									nes->dataBus->read(current_pc + 1),
+									nes->dataBus->read(current_pc + 2));
 							}
 
 							// Disassembled Instruction
@@ -152,49 +155,49 @@ int main()
 								ImGui::Text("%s A", operation.mnemonic.c_str());
 								break;
 							case Operation::AddressingMode::IMMEDIATE:
-								ImGui::Text("%s #%d", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s #%d", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ZERO_PAGE:
-								ImGui::Text("%s $%02x", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s $%02x", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ZERO_PAGE_X:
-								ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ZERO_PAGE_Y:
-								ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::RELATIVE:
-								ImGui::Text("%s *$%+d", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s *$%+d", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ABSOLUTE:
 								ImGui::Text("%s $%02x%02x",
 									operation.mnemonic.c_str(),
-									dataBus.read(current_pc + 2),
-									dataBus.read(current_pc + 1));
+									nes->dataBus->read(current_pc + 2),
+									nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ABSOLUTE_X:
 								ImGui::Text("%s $%02x%02x,X",
 									operation.mnemonic.c_str(),
-									dataBus.read(current_pc + 2),
-									dataBus.read(current_pc + 1));
+									nes->dataBus->read(current_pc + 2),
+									nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::ABSOLUTE_Y:
 								ImGui::Text("%s $%02x%02x,Y",
 									operation.mnemonic.c_str(),
-									dataBus.read(current_pc + 2),
-									dataBus.read(current_pc + 1));
+									nes->dataBus->read(current_pc + 2),
+									nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::INDIRECT:
 								ImGui::Text("%s ($%02x%02x)",
 									operation.mnemonic.c_str(),
-									dataBus.read(current_pc + 2),
-									dataBus.read(current_pc + 1));
+									nes->dataBus->read(current_pc + 2),
+									nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::INDEXED_INDIRECT:
-								ImGui::Text("%s ($%02x,X)", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s ($%02x,X)", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							case Operation::AddressingMode::INDIRECT_INDEXED:
-								ImGui::Text("%s ($%02x),Y", operation.mnemonic.c_str(), dataBus.read(current_pc + 1));
+								ImGui::Text("%s ($%02x),Y", operation.mnemonic.c_str(), nes->dataBus->read(current_pc + 1));
 								break;
 							}
 
@@ -349,7 +352,7 @@ int main()
 
 					ImGui::TableNextRow();
 
-					uint8_t data = dataBus.read(addr);
+					uint8_t data = nes->dataBus->read(addr);
 
 					ImGui::TableSetColumnIndex(0);
 					ImGui::Text("%04x", addr);
@@ -382,6 +385,7 @@ int main()
 		SDL_RenderPresent(renderer);
 	}
 
+	delete(nes);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

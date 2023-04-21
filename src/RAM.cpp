@@ -22,3 +22,13 @@ void RAM::write(uint8_t data, uint16_t address)
 		std::cout << "Illegal write" << std::endl;
 	}
 }
+
+RAM::RAM()
+{
+	std::printf("Created RAM\n");
+}
+
+RAM::~RAM()
+{
+	std::printf("Destroyed RAM\n");
+}

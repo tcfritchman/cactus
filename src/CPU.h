@@ -37,11 +37,12 @@ class CPU
 	State GetState();
 	Operation GetOperation(uint8_t op_code);
 
-	explicit CPU(DataBus& mBus);
+	explicit CPU(DataBus* mBus);
 	CPU() = delete;
+	virtual ~CPU();
 
  private:
-	DataBus& mBus;
+	DataBus* mBus;
 
 	uint8_t mRegA = 0;
 	uint8_t mRegX = 0;

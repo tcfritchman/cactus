@@ -4,7 +4,7 @@
 
 void CPU::Cycle()
 {
-	mCurrentOpCode = mBus.read(mRegPC);
+	mCurrentOpCode = mBus->read(mRegPC);
 	Operation operation = OPERATIONS[mCurrentOpCode];
 	ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
 	INSTRUCTION_MAP.find(operation.instruction)->second();
@@ -38,8 +38,14 @@ Operation CPU::GetOperation(uint8_t op_code)
 	return OPERATIONS[op_code];
 }
 
-CPU::CPU(DataBus& mBus) : mBus(mBus)
+CPU::CPU(DataBus* mBus) : mBus(mBus)
 {
+	std::printf("Created CPU\n");
+}
+
+CPU::~CPU()
+{
+	std::printf("Destroyed CPU\n");
 }
 
 void CPU::Implicit()
@@ -54,96 +60,96 @@ void CPU::Accumulator()
 
 void CPU::Immediate()
 {
-	mData = mBus.read(mRegPC + 1);
+	mData = mBus->read(mRegPC + 1);
 }
 
 void CPU::ZeroPage()
 {
 	mAddrHi = 0;
-	mAddrLo = mBus.read(mRegPC + 1);
+	mAddrLo = mBus->read(mRegPC + 1);
 	mAddr = mAddrLo;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::ZeroPageX()
 {
 	mAddrHi = 0;
-	mAddrLo = mBus.read(mRegPC + 1) + mRegX;
+	mAddrLo = mBus->read(mRegPC + 1) + mRegX;
 	mAddr = mAddrLo;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::ZeroPageY()
 {
 	mAddrHi = 0;
-	mAddrLo = mBus.read(mRegPC + 1) + mRegY;
+	mAddrLo = mBus->read(mRegPC + 1) + mRegY;
 	mAddr = mAddrLo;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::Relative()
 {
-	auto offset = static_cast<int8_t>(mBus.read(mRegPC + 1)); // convert to signed value
+	auto offset = static_cast<int8_t>(mBus->read(mRegPC + 1)); // convert to signed value
 	mAddr = mRegPC + offset; // TODO: Does it wrap around?
 	// TODO: hi and lo addr bytes?
-	mData = mBus.read(mAddr); // Not used
+	mData = mBus->read(mAddr); // Not used
 }
 
 void CPU::Absolute()
 {
-	mAddrLo = mBus.read(mRegPC + 1);
-	mAddrHi = mBus.read(mRegPC + 2);
+	mAddrLo = mBus->read(mRegPC + 1);
+	mAddrHi = mBus->read(mRegPC + 2);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::AbsoluteX()
 {
-	mAddrLo = mBus.read(mRegPC + 1);
-	mAddrHi = mBus.read(mRegPC + 2);
+	mAddrLo = mBus->read(mRegPC + 1);
+	mAddrHi = mBus->read(mRegPC + 2);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo + mRegX;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::AbsoluteY()
 {
-	mAddrLo = mBus.read(mRegPC + 1);
-	mAddrHi = mBus.read(mRegPC + 2);
+	mAddrLo = mBus->read(mRegPC + 1);
+	mAddrHi = mBus->read(mRegPC + 2);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo + mRegY;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::Indirect()
 {
-	auto indirect_lo = mBus.read(mRegPC + 1);
-	auto indirect_hi = mBus.read(mRegPC + 2);
+	auto indirect_lo = mBus->read(mRegPC + 1);
+	auto indirect_hi = mBus->read(mRegPC + 2);
 	auto indirect_addr = (((uint16_t)indirect_hi) << 8) + indirect_lo;
-	mAddrLo = mBus.read(indirect_addr);
-	mAddrHi = mBus.read(indirect_addr + 1);
+	mAddrLo = mBus->read(indirect_addr);
+	mAddrHi = mBus->read(indirect_addr + 1);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
-	mData = mBus.read(mAddr); // Not used
+	mData = mBus->read(mAddr); // Not used
 }
 
 void CPU::IndexedIndirect()
 {
-	auto indirect_zero_page = mBus.read(mRegPC + 1);
+	auto indirect_zero_page = mBus->read(mRegPC + 1);
 	uint8_t indirect_addr = indirect_zero_page + mRegX;
-	mAddrLo = mBus.read(indirect_addr);
-	mAddrHi = mBus.read(indirect_addr + 1);
+	mAddrLo = mBus->read(indirect_addr);
+	mAddrHi = mBus->read(indirect_addr + 1);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::IndirectIndexed()
 {
-	auto indirect_zero_page = mBus.read(mRegPC + 1);
-	auto indirect_lo = mBus.read(indirect_zero_page + 1);
-	auto indirect_hi = mBus.read(indirect_zero_page + 2);
+	auto indirect_zero_page = mBus->read(mRegPC + 1);
+	auto indirect_lo = mBus->read(indirect_zero_page + 1);
+	auto indirect_hi = mBus->read(indirect_zero_page + 2);
 	auto indirect_addr = (((uint16_t)indirect_hi) << 8) + indirect_lo + mRegY;
-	mAddrLo = mBus.read(indirect_addr);
-	mAddrHi = mBus.read(indirect_addr + 1);
+	mAddrLo = mBus->read(indirect_addr);
+	mAddrHi = mBus->read(indirect_addr + 1);
 	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
-	mData = mBus.read(mAddr);
+	mData = mBus->read(mAddr);
 }
 
 void CPU::OOPS()
@@ -203,17 +209,17 @@ inline void CPU::SetFlags(uint8_t status)
 
 void CPU::STA()
 {
-	mBus.write(mRegA, mAddr);
+	mBus->write(mRegA, mAddr);
 }
 
 void CPU::STX()
 {
-	mBus.write(mRegX, mAddr);
+	mBus->write(mRegX, mAddr);
 }
 
 void CPU::STY()
 {
-	mBus.write(mRegY, mAddr);
+	mBus->write(mRegY, mAddr);
 }
 
 void CPU::TAX()
@@ -258,21 +264,21 @@ void CPU::TXS()
 
 void CPU::PHA()
 {
-	mBus.write(mRegA, mRegSP);
+	mBus->write(mRegA, mRegSP);
 	mRegSP--;
 }
 
 void CPU::PHP()
 {
 	uint8_t status = GetFlags();
-	mBus.write(status, mRegSP);
+	mBus->write(status, mRegSP);
 	mRegSP--;
 }
 
 void CPU::PLA()
 {
 	mRegSP++;
-	mRegA = mBus.read(mRegSP);
+	mRegA = mBus->read(mRegSP);
 	ComputeZ(mRegA);
 	ComputeN(mRegA);
 }
@@ -280,7 +286,7 @@ void CPU::PLA()
 void CPU::PLP()
 {
 	mRegSP++;
-	uint8_t status = mBus.read(mRegSP);
+	uint8_t status = mBus->read(mRegSP);
 	SetFlags(status);
 }
 
@@ -339,7 +345,7 @@ void CPU::CPY()
 void CPU::INC()
 {
 	uint8_t result = mData + 1;
-	mBus.write(result, mAddr);
+	mBus->write(result, mAddr);
 	ComputeZ(result);
 	ComputeN(result);
 }
@@ -361,7 +367,7 @@ void CPU::INY()
 void CPU::DEC()
 {
 	uint8_t result = mData - 1;
-	mBus.write(result, mAddr);
+	mBus->write(result, mAddr);
 	ComputeZ(result);
 	ComputeN(result);
 }
@@ -384,7 +390,7 @@ void CPU::ASL()
 {
 	bool isCarry = mData & 0x80;
 	uint8_t result = mData << 1;
-	mBus.write(result, mAddr);
+	mBus->write(result, mAddr);
 	mCarryFlag = isCarry;
 	ComputeZ(result);
 	ComputeN(result);
@@ -394,7 +400,7 @@ void CPU::LSR()
 {
 	bool isCarry = mData & 0x1;
 	uint8_t result = mData >> 1;
-	mBus.write(result, mAddr);
+	mBus->write(result, mAddr);
 	mCarryFlag = isCarry;
 	ComputeZ(result);
 	ComputeN(result);
@@ -404,7 +410,7 @@ void CPU::ROL()
 {
 	uint8_t hiBit = mData & 0x80;
 	uint8_t result = (mData << 1) | (hiBit >> 7);
-	mBus.write(result, mAddr);
+	mBus->write(result, mAddr);
 	mCarryFlag = hiBit != 0;
 	ComputeZ(result);
 	ComputeN(result);
@@ -414,7 +420,7 @@ void CPU::ROR()
 {
 	uint8_t loBit = mData & 0x1;
 	uint8_t result = (mData >> 1) | (loBit << 7);
-	mBus.write(result, mAddr);
+	mBus->write(result, mAddr);
 	mCarryFlag = loBit != 0;
 	ComputeZ(result);
 	ComputeN(result);
@@ -459,9 +465,9 @@ void CPU::JSR()
 	uint16_t return_addr = mRegPC - 1; // Assuming PC is advanced before this function call!
 	uint8_t return_addr_hi = nes::hi_byte(return_addr);
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
-	mBus.write(return_addr_hi, mRegSP);
+	mBus->write(return_addr_hi, mRegSP);
 	mRegSP--;
-	mBus.write(return_addr_lo, mRegSP);
+	mBus->write(return_addr_lo, mRegSP);
 	mRegSP--;
 	mRegPC = mAddr;
 }
@@ -469,9 +475,9 @@ void CPU::JSR()
 void CPU::RTS()
 {
 	mRegSP++;
-	uint8_t return_addr_lo = mBus.read(mRegSP);
+	uint8_t return_addr_lo = mBus->read(mRegSP);
 	mRegSP++;
-	uint8_t return_addr_hi = mBus.read(mRegSP);
+	uint8_t return_addr_hi = mBus->read(mRegSP);
 	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
 	mRegPC = return_addr;
 }
@@ -584,11 +590,11 @@ void CPU::BRK()
 	uint8_t status = GetFlags();
 	nes::set_bit(&status, 4); // How to handle IRQ/NMI not setting this bit
 	nes::set_bit(&status, 5);
-	mBus.write(return_addr_hi, mRegSP);
+	mBus->write(return_addr_hi, mRegSP);
 	mRegSP--;
-	mBus.write(return_addr_lo, mRegSP);
+	mBus->write(return_addr_lo, mRegSP);
 	mRegSP--;
-	mBus.write(status, mRegSP);
+	mBus->write(status, mRegSP);
 	mRegSP--;
 	mRegPC = mAddr;
 }
@@ -601,11 +607,11 @@ void CPU::NOP()
 void CPU::RTI()
 {
 	mRegSP++;
-	uint8_t status = mBus.read(mRegSP);
+	uint8_t status = mBus->read(mRegSP);
 	mRegSP++;
-	uint8_t return_addr_lo = mBus.read(mRegSP);
+	uint8_t return_addr_lo = mBus->read(mRegSP);
 	mRegSP++;
-	uint8_t return_addr_hi = mBus.read(mRegSP);
+	uint8_t return_addr_hi = mBus->read(mRegSP);
 	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
 	mRegPC = return_addr;
 	SetFlags(status);
