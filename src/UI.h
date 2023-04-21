@@ -14,6 +14,8 @@ class UI
 	void Redraw();
 	void HandleEvent(SDL_Event* event);
 
+	UI() = delete;
+
  private:
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
@@ -24,6 +26,8 @@ class UI
 
 	UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, NES* mNes);
 
+	void DrawCPUDebug();
+	void DrawMemoryDebug();
 };
 
 #endif //NES_EMULATOR_SRC_UI_H_
