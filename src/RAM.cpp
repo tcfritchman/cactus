@@ -3,25 +3,28 @@
 
 uint8_t RAM::read(uint16_t address)
 {
-	if (address >= 0 && address < 0x400)
+	if (address >= 0 && address < 0x2000)
 	{
-		return m_test_ram[address];
+		// Internal ram is 2KB, mirrored
+		return mRamInternal[address % 0x800];
 	}
 	else
 	{
-		return 0;
+		std::cout << "Illegal read - RAM" << std::endl;
+		exit(1);
 	}
 }
 
 void RAM::write(uint8_t data, uint16_t address)
 {
-	if (address >= 0 && address < 0x400)
+	if (address >= 0 && address < 0x2000)
 	{
-		m_test_ram[address] = data;
+		mRamInternal[address % 0x800] = data;
 	}
 	else
 	{
-		std::cout << "Illegal write" << std::endl;
+		std::cout << "Illegal write - RAM" << std::endl;
+		exit(1);
 	}
 }
 
