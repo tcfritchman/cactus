@@ -1,11 +1,19 @@
-#include "CPU.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "NES.h"
 #include "UI.h"
+#include "INesRom.h"
+#include "Util.h"
 #include <SDL.h>
 
-int main()
+int main(int argc, char* argv[])
 {
+	auto filename = argv[1];
+	auto rom_bytes = nes::read_file_bytes(filename);
+	INesRom rom(rom_bytes);
+
+	auto prg_rom = rom.GetProgramRomData();
+	auto chr_rom = rom.GetCharacterRomData();
+
 	NES* nes = new NES();
 	bool quit = false;
 	bool step = false;
@@ -49,7 +57,7 @@ int main()
 		SDL_RenderPresent(renderer);
 	}
 
-	delete(nes);
+	delete (nes);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
