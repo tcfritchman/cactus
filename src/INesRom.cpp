@@ -14,6 +14,11 @@ INesRom::INesRom(const std::vector<char>& bytes) : bytes(bytes)
 		GetCharacterRomSize());
 }
 
+INesRom::~INesRom()
+{
+	std::printf("Destroyed INesRom\n");
+}
+
 int INesRom::GetProgramRomSize()
 {
 	return bytes[PRG_ROM_SIZE_BYTE] * PRG_ROM_BLOCK_SIZE;

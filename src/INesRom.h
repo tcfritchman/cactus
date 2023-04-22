@@ -16,6 +16,7 @@ class INesRom
 	std::vector<char> GetCharacterRomData();
 
 	explicit INesRom(const std::vector<char>& bytes);
+	virtual ~INesRom();
 
  private:
 	const std::vector<char> bytes;

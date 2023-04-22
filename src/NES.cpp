@@ -9,8 +9,8 @@ NES::NES()
 
 NES::~NES()
 {
-	delete(ram);
-	delete(dataBus);
-	delete(cpu);
+	delete (ram);
+	delete (dataBus);
+	delete (cpu);
 	std::printf("Destroyed NES\n");
 }
