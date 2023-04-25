@@ -1,9 +1,0 @@
-#ifndef NES_EMULATOR_SRC_MAPPER_H_
-#define NES_EMULATOR_SRC_MAPPER_H_
-
-class Mapper
-{
-
-};
-
-#endif //NES_EMULATOR_SRC_MAPPER_H_

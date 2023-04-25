@@ -2,7 +2,7 @@
 #include "INesRom.h"
 #include "Util.h"
 
-INesRom::INesRom(const std::vector<char>& bytes) : bytes(bytes)
+INesRom::INesRom(const std::vector<uint8_t>& bytes) : bytes(bytes)
 {
 	prg_rom_start = HEADER_SIZE
 		+ (HasTrainer() ? TRAINER_SIZE : 0);
@@ -19,36 +19,36 @@ INesRom::~INesRom()
 	std::printf("Destroyed INesRom\n");
 }
 
-int INesRom::GetProgramRomSize()
+int INesRom::GetProgramRomSize() const
 {
 	return bytes[PRG_ROM_SIZE_BYTE] * PRG_ROM_BLOCK_SIZE;
 }
 
-int INesRom::GetCharacterRomSize()
+int INesRom::GetCharacterRomSize() const
 {
 	return bytes[CHR_ROM_SIZE_BYTE] * CHR_ROM_BLOCK_SIZE;
 }
 
-int INesRom::GetMapperNumber()
+int INesRom::GetMapperNumber() const
 {
 	return (bytes[FLAGS_7_BYTE] & 0xF0) | (bytes[FLAGS_6_BYTE] >> 4);
 }
 
-bool INesRom::HasTrainer()
+bool INesRom::HasTrainer() const
 {
 	return nes::test_bit(bytes[FLAGS_6_BYTE], TRAINER_BIT);
 }
 
-std::vector<char> INesRom::GetProgramRomData()
+std::vector<uint8_t> INesRom::GetProgramRomData() const
 {
 	auto start = bytes.begin() + prg_rom_start;
 	auto end = start + GetProgramRomSize();
-	return std::vector<char>{ start, end };
+	return std::vector<uint8_t>{ start, end };
 }
 
-std::vector<char> INesRom::GetCharacterRomData()
+std::vector<uint8_t> INesRom::GetCharacterRomData() const
 {
 	auto start = bytes.begin() + chr_rom_start;
 	auto end = start + GetCharacterRomSize();
-	return std::vector<char>{ start, end };
+	return std::vector<uint8_t>{ start, end };
 }

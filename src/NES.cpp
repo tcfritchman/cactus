@@ -1,11 +1,12 @@
 #include "NES.h"
+#include "INesRom.h"
 
-NES::NES()
+NES::NES(const INesRom& rom)
 {
 	ram = new RAM();
 	ppu = new PPU();
 	apu = new APU();
-	cart = new Cartridge();
+	cart = new Cartridge(rom);
 	dataBus = new DataBus(ram, ppu, apu, cart);
 	cpu = new CPU(dataBus);
 	std::printf("Created NES\n");

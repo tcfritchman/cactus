@@ -14,7 +14,8 @@ class NES
 	DataBus* dataBus;
 	CPU* cpu;
 
-	NES();
+	NES(const INesRom& rom);
+	NES() = delete;
 	~NES();
 };
 

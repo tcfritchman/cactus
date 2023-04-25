@@ -2,6 +2,7 @@
 #define NES_EMULATOR_SRC_CARTRIDGE_H_
 
 #include "MemoryDevice.h"
+#include "INesRom.h"
 
 class Cartridge : public MemoryDevice
 {
@@ -9,8 +10,13 @@ class Cartridge : public MemoryDevice
 	uint8_t read(uint16_t address) override;
 	void write(uint8_t data, uint16_t address) override;
 
-	Cartridge();
+	explicit Cartridge(const INesRom& rom);
+	Cartridge() = delete;
 	virtual ~Cartridge();
+
+ private:
+	std::vector<uint8_t> prg_rom;
+	std::vector<uint8_t> chr_rom;
 };
 
 #endif //NES_EMULATOR_SRC_CARTRIDGE_H_

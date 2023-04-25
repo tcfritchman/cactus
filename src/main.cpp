@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	auto prg_rom = rom.GetProgramRomData();
 	auto chr_rom = rom.GetCharacterRomData();
 
-	NES* nes = new NES();
+	NES* nes = new NES(rom);
 	bool quit = false;
 	bool step = false;
 	SDL_Event event;

@@ -33,14 +33,14 @@ void nes::clear_bit(uint8_t* value, int bit)
 	*value = (~(1 << bit)) & *value;
 }
 
-std::vector<char> nes::read_file_bytes(const char* filename)
+std::vector<uint8_t> nes::read_file_bytes(const char* filename)
 {
 	std::ifstream ifs(filename, std::ios::binary | std::ios::ate);
 	std::ifstream::pos_type pos = ifs.tellg();
 
 	if (pos == 0)
 	{
-		return std::vector<char>{};
+		return std::vector<uint8_t>{};
 	}
 
 	std::vector<char> result(pos);
@@ -48,5 +48,7 @@ std::vector<char> nes::read_file_bytes(const char* filename)
 	ifs.seekg(0, std::ios::beg);
 	ifs.read(result.data(), pos);
 
-	return result;
+	// Convert to vector<uint8_t>
+	auto s = (uint8_t*)result.data();
+	return std::vector<uint8_t>{ s, s + pos };
 }

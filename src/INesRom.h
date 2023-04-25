@@ -8,18 +8,18 @@ class INesRom
 {
 
  public:
-	int GetProgramRomSize();
-	int GetCharacterRomSize();
-	int GetMapperNumber();
-	bool HasTrainer();
-	std::vector<char> GetProgramRomData();
-	std::vector<char> GetCharacterRomData();
+	int GetProgramRomSize() const;
+	int GetCharacterRomSize() const;
+	int GetMapperNumber() const;
+	bool HasTrainer() const;
+	std::vector<uint8_t> GetProgramRomData() const;
+	std::vector<uint8_t> GetCharacterRomData() const;
 
-	explicit INesRom(const std::vector<char>& bytes);
+	explicit INesRom(const std::vector<uint8_t>& bytes);
 	virtual ~INesRom();
 
  private:
-	const std::vector<char> bytes;
+	const std::vector<uint8_t> bytes;
 	int prg_rom_start;
 	int chr_rom_start;
 
