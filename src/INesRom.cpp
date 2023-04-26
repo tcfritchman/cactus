@@ -8,8 +8,9 @@ INesRom::INesRom(const std::vector<uint8_t>& bytes) : bytes(bytes)
 		+ (HasTrainer() ? TRAINER_SIZE : 0);
 	chr_rom_start = prg_rom_start + GetProgramRomSize();
 
-	std::printf("Created INesRom - Mapper: %d, PrgRomsize: %d, ChrRomSize %d\n",
+	std::printf("Created INesRom - Mapper: %d, HasTrainer: %d, PrgRomsize: %d, ChrRomSize %d\n",
 		GetMapperNumber(),
+		HasTrainer(),
 		GetProgramRomSize(),
 		GetCharacterRomSize());
 }

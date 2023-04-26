@@ -23,11 +23,11 @@ DataBus::~DataBus()
 
 MemoryDevice* DataBus::RouteToMemoryDevice(uint16_t address)
 {
-	if (address >= RAM_START_ADDRESS && address < RAM_END_ADDRESS) {
+	if (address >= RAM::START_ADDRESS && address < RAM::END_ADDRESS) {
 		return mRAM;
-	} else if (address >= PPU_START_ADDRESS && address < PPU_END_ADDRESS) {
+	} else if (address >= PPU::START_ADDRESS && address < PPU::END_ADDRESS) {
 		return mPPU;
-	} else if (address >= APU_START_ADDRESS && address < APU_END_ADDRESS) {
+	} else if (address >= APU::START_ADDRESS && address < APU::END_ADDRESS) {
 		return mAPU;
 	} else {
 		return mCart;

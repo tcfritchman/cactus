@@ -18,7 +18,8 @@ void CPU::IRQ()
 
 void CPU::Reset()
 {
-	// TODO
+	uint16_t reset_vector = nes::address(mBus->read(0xFFFC), mBus->read(0xFFFD));
+	mRegPC = reset_vector;
 }
 
 void CPU::NMI()
@@ -40,6 +41,7 @@ Operation CPU::GetOperation(uint8_t op_code)
 
 CPU::CPU(DataBus* mBus) : mBus(mBus)
 {
+	CPU::Reset();
 	std::printf("Created CPU\n");
 }
 

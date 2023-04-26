@@ -20,7 +20,7 @@ uint16_t nes::address(uint8_t lo_byte, uint8_t hi_byte)
 
 bool nes::test_bit(uint8_t value, int bit)
 {
-	return (1 << bit) | value;
+	return (1 << bit) & value;
 }
 
 void nes::set_bit(uint8_t* value, int bit)

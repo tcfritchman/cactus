@@ -12,6 +12,11 @@ class RAM : public MemoryDevice
 	RAM();
 	virtual ~RAM();
 
+	static const uint16_t START_ADDRESS = 0;
+	static const uint16_t PHYSICAL_SIZE = 0x800;
+	static const uint16_t ADDRESS_COUNT = 0x2000;
+	static const uint16_t END_ADDRESS = START_ADDRESS + ADDRESS_COUNT;
+
  private:
 	uint8_t mRamInternal[0x800] = { 0xa9, 0x01, 0x8d, 0x00, 0x02, 0xa9, 0x05, 0x8d, 0x01, 0x02, 0xa9, 0x08, 0x8d, 0x02, 0x02, 0xff };
 	uint8_t mRamPPU[0x8] = { 0 };

@@ -304,7 +304,8 @@ void UI::DrawMemoryDebug()
 
 	ImGui::Begin("Memory", p_open, window_flags);
 
-	static int start_addr = 0x200;
+	static int start_addr = 0;
+	static const int rows = 20;
 
 	ImGui::InputInt("##", &start_addr);
 
@@ -313,14 +314,14 @@ void UI::DrawMemoryDebug()
 		start_addr = 0;
 	}
 
-	if (start_addr > 0x400)
+	if (start_addr > (0xFFFF - rows))
 	{
-		start_addr = 0x400;
+		start_addr = 0xFFFF - rows;
 	}
 
 	if (ImGui::BeginTable("table_memory", 3))
 	{
-		for (int row = 0; row < 20; row++)
+		for (int row = 0; row < rows; row++)
 		{
 			uint16_t addr = start_addr + row;
 
