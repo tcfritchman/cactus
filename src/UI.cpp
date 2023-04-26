@@ -306,8 +306,10 @@ void UI::DrawMemoryDebug()
 
 	static int start_addr = 0;
 	static const int rows = 20;
+	static const int step = 1;
+	static const int step_fast = 32;
 
-	ImGui::InputInt("##", &start_addr);
+	ImGui::InputInt("##", &start_addr, step, step_fast, ImGuiInputTextFlags_CharsHexadecimal);
 
 	if (start_addr < 0)
 	{
