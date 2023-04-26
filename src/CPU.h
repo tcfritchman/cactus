@@ -267,7 +267,7 @@ class CPU
 		UNKNOWN_INSTR,
 
 		// 0x10
-		{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BPL, 0},
+		{Operation::AddressingMode::RELATIVE, Operation::Instruction::BPL, 0},
 		{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::ORA, 0},
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
