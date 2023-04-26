@@ -127,19 +127,24 @@ void UI::DrawCPUDebug()
 						ImGui::Text("%s A", operation.mnemonic.c_str());
 						break;
 					case Operation::AddressingMode::IMMEDIATE:
-						ImGui::Text("%s #%d", operation.mnemonic.c_str(), mNes->dataBus->read(current_pc + 1));
+						ImGui::Text("%s #%d", operation.mnemonic.c_str(),
+							mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ZERO_PAGE:
-						ImGui::Text("%s $%02x", operation.mnemonic.c_str(), mNes->dataBus->read(current_pc + 1));
+						ImGui::Text("%s $%02x", operation.mnemonic.c_str(),
+							mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ZERO_PAGE_X:
-						ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(), mNes->dataBus->read(current_pc + 1));
+						ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(),
+							mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ZERO_PAGE_Y:
-						ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(), mNes->dataBus->read(current_pc + 1));
+						ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(),
+							mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::RELATIVE:
-						ImGui::Text("%s *$%+d", operation.mnemonic.c_str(), mNes->dataBus->read(current_pc + 1));
+						ImGui::Text("%s *$%+d", operation.mnemonic.c_str(),
+							static_cast<int8_t>(mNes->dataBus->read(current_pc + 1)));
 						break;
 					case Operation::AddressingMode::ABSOLUTE:
 						ImGui::Text("%s $%02x%02x",
