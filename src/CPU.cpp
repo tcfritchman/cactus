@@ -194,10 +194,10 @@ inline void CPU::ComputeN(uint8_t value)
 inline uint8_t CPU::GetFlags() const
 {
 	return (mCarryFlag)
-		& (mZeroFlag << 1)
-		& (mInterruptDisableFlag << 2)
-		& (mOverflowFlag << 6)
-		& (mNegativeFlag << 7);
+		| (mZeroFlag << 1)
+		| (mInterruptDisableFlag << 2)
+		| (mOverflowFlag << 6)
+		| (mNegativeFlag << 7);
 }
 
 inline void CPU::SetFlags(uint8_t status)
