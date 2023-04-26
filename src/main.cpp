@@ -40,7 +40,9 @@ int main(int argc, char* argv[])
 				quit = true;
 				break;
 			case SDL_KEYDOWN:
-				step = true;
+				if (event.key.keysym.sym == SDLK_SPACE) {
+					step = true;
+				}
 				break;
 			}
 		}
