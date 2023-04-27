@@ -18,10 +18,7 @@ class RAM : public MemoryDevice
 	static const uint16_t END_ADDRESS = START_ADDRESS + ADDRESS_COUNT;
 
  private:
-	uint8_t mRamInternal[0x800] = { 0xa9, 0x01, 0x8d, 0x00, 0x02, 0xa9, 0x05, 0x8d, 0x01, 0x02, 0xa9, 0x08, 0x8d, 0x02, 0x02, 0xff };
-	uint8_t mRamPPU[0x8] = { 0 };
-	uint8_t mRamAPU[0x20] = { 0 }; // Includes Test Mode space
-
+	uint8_t mRamInternal[PHYSICAL_SIZE] = { 0 };
 };
 
 #endif //NES_EMULATOR_SRC_RAM_H_
