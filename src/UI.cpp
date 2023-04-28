@@ -29,6 +29,7 @@ void UI::Redraw()
 	ImGui::NewFrame();
 
 	// Redraw UI Components
+	DrawMainMenuBar();
 	DrawCPUDebug();
 	DrawMemoryDebug();
 
@@ -42,6 +43,48 @@ void UI::Redraw()
 	SDL_RenderClear(mRenderer);
 	ImGui::Render();
 	ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+}
+
+void UI::DrawMainMenuBar()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open", "Cmd+O")) {}
+			if (ImGui::BeginMenu("Open Recent"))
+			{
+				ImGui::MenuItem("rom1.nes");
+				ImGui::MenuItem("rom2.nes");
+				ImGui::MenuItem("romN.nes");
+				ImGui::EndMenu();
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem("Exit", "Cmd+Q")) {}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem("CPU", NULL, true)) {}
+			if (ImGui::MenuItem("Memory", NULL, true)) {}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Machine"))
+		{
+			if (ImGui::MenuItem("Pause", "Cmd+P", false, false)) {}
+			if (ImGui::MenuItem("Reset", "Cmd+R")) {}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Debug"))
+		{
+			if (ImGui::MenuItem("Break", "Cmd+B", false, false)) {}  // Disabled item
+			if (ImGui::MenuItem("Set Breakpoint", "Cmd+Shift+B", false, false)) {}
+			if (ImGui::MenuItem("Step", "Spacebar")) {}
+			if (ImGui::MenuItem("Continue", 			NULL, false, false)) {}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
 }
 
 void UI::DrawCPUDebug()
