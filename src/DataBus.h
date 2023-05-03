@@ -6,12 +6,13 @@
 #include "PPU.h"
 #include "APU.h"
 #include "Cartridge.h"
+#include "IDataBus.h"
 
-class DataBus
+class DataBus : public IDataBus
 {
  public:
-	uint8_t read(uint16_t address);
-	void write(uint8_t data, uint16_t address);
+	uint8_t read(uint16_t address) override;
+	void write(uint8_t data, uint16_t address) override;
 
 	explicit DataBus(RAM* mRam, PPU* mPPU, APU* mAPU, Cartridge* mCart);
 	DataBus() = delete;
