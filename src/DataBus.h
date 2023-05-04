@@ -6,9 +6,9 @@
 #include "PPU.h"
 #include "APU.h"
 #include "Cartridge.h"
-#include "IDataBus.h"
+#include "MemoryDevice.h"
 
-class DataBus : public IDataBus
+class DataBus : public MemoryDevice
 {
  public:
 	uint8_t read(uint16_t address) override;

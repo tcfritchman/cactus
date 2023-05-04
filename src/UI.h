@@ -28,6 +28,7 @@ class UI
 
 	void DrawCPUDebug();
 	void DrawMemoryDebug();
+	void DrawPatternTableDebug();
 	void DrawMainMenuBar();
 };
 

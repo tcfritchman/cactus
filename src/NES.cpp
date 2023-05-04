@@ -3,10 +3,11 @@
 
 NES::NES(const INesRom& rom)
 {
-	ram = new RAM();
-	ppu = new PPU();
-	apu = new APU();
 	cart = new Cartridge(rom);
+	ppu = new PPU();
+	videoDataBus = new VideoDataBus(cart);
+	ram = new RAM();
+	apu = new APU();
 	dataBus = new DataBus(ram, ppu, apu, cart);
 	cpu = new CPU(dataBus);
 	std::printf("Created NES\n");
@@ -14,11 +15,12 @@ NES::NES(const INesRom& rom)
 
 NES::~NES()
 {
-	delete (ram);
-	delete (ppu);
-	delete (apu);
-	delete (cart);
-	delete (dataBus);
 	delete (cpu);
+	delete (dataBus);
+	delete (apu);
+	delete (ram);
+	delete (videoDataBus);
+	delete (ppu);
+	delete (cart);
 	std::printf("Destroyed NES\n");
 }

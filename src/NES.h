@@ -3,6 +3,7 @@
 
 #include "DataBus.h"
 #include "CPU.h"
+#include "VideoDataBus.h"
 
 class NES
 {
@@ -12,6 +13,7 @@ class NES
 	APU* apu;
 	Cartridge* cart;
 	DataBus* dataBus;
+	VideoDataBus* videoDataBus;
 	CPU* cpu;
 
 	NES(const INesRom& rom);

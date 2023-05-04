@@ -2,6 +2,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
+#include <SDL.h>
 
 UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, NES* nes)
 {
@@ -32,6 +33,7 @@ void UI::Redraw()
 	DrawMainMenuBar();
 	DrawCPUDebug();
 	DrawMemoryDebug();
+	DrawPatternTableDebug();
 
 	// Rendering
 	SDL_RenderSetScale(mRenderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
@@ -400,6 +402,49 @@ void UI::DrawMemoryDebug()
 	ImGui::End();
 }
 
+void UI::DrawPatternTableDebug()
+{
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
+	bool* p_open = nullptr;
+
+	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 700, main_viewport->WorkPos.y + 20),
+		ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
+
+	ImGui::Begin("Pattern Table", p_open, window_flags);
+
+	// Test texture
+	int my_texture_width = 128, my_texture_height = 128;
+	static SDL_Texture* my_texture = nullptr;
+	static uint32_t* pixel_buffer = nullptr;
+
+	if (my_texture == nullptr)
+	{
+		my_texture = SDL_CreateTexture(mRenderer,
+			SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			my_texture_width,
+			my_texture_height);
+		pixel_buffer = new uint32_t[my_texture_width * my_texture_height];
+		for (int i = 0; i < my_texture_height; i++)
+		{
+			for (int j = 0; j < my_texture_width; j++)
+			{
+				uint32_t color = (i << 8) | j;
+				pixel_buffer[(i * my_texture_width) + j] = color;
+			}
+		}
+		SDL_UpdateTexture(my_texture, nullptr, pixel_buffer, my_texture_width * sizeof(uint32_t));
+	}
+
+	ImGui::Image((void*)(intptr_t)my_texture, ImVec2(my_texture_width, my_texture_height));
+	ImGui::SameLine();
+	ImGui::Image((void*)(intptr_t)my_texture, ImVec2(my_texture_width, my_texture_height));
+
+	ImGui::End();
+}
+
 UI::UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, NES* mNes)
 	: mWindow(mWindow), mRenderer(mRenderer), io(io), mNes(mNes)
 {
@@ -409,3 +454,6 @@ void UI::HandleEvent(SDL_Event* event)
 {
 	ImGui_ImplSDL2_ProcessEvent(event);
 }
+
+
+
