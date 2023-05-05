@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "Util.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
@@ -408,39 +409,60 @@ void UI::DrawPatternTableDebug()
 	bool* p_open = nullptr;
 
 	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 700, main_viewport->WorkPos.y + 20),
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 430),
 		ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
 
 	ImGui::Begin("Pattern Table", p_open, window_flags);
 
 	// Test texture
-	int my_texture_width = 128, my_texture_height = 128;
-	static SDL_Texture* my_texture = nullptr;
-	static uint32_t* pixel_buffer = nullptr;
+	int texture_width = 128, texture_height = 128;
+	static SDL_Texture* texture_left = nullptr;
+	static SDL_Texture* texture_right = nullptr;
 
-	if (my_texture == nullptr)
+	if (texture_left == nullptr)
 	{
-		my_texture = SDL_CreateTexture(mRenderer,
+		uint32_t* pixel_buffer_left = new uint32_t[texture_width * texture_height] {};
+		uint32_t* pixel_buffer_right = new uint32_t[texture_width * texture_height] {};
+
+		texture_left = SDL_CreateTexture(mRenderer,
 			SDL_PIXELFORMAT_ARGB8888,
 			SDL_TEXTUREACCESS_STREAMING,
-			my_texture_width,
-			my_texture_height);
-		pixel_buffer = new uint32_t[my_texture_width * my_texture_height];
-		for (int i = 0; i < my_texture_height; i++)
-		{
-			for (int j = 0; j < my_texture_width; j++)
-			{
-				uint32_t color = (i << 8) | j;
-				pixel_buffer[(i * my_texture_width) + j] = color;
+			texture_width,
+			texture_height);
+		texture_right = SDL_CreateTexture(mRenderer,
+			SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			texture_width,
+			texture_height);
+
+		// Render pattern data
+		for (uint16_t addr = 0; addr < 0x2000; addr++) {
+			bool isUpperPlane = (addr >> 0x3) & 0b1;
+			uint16_t fineYOffset = addr & 0b111;
+			uint16_t tileCol = (addr >> 0x4) & 0b1111;
+			uint16_t tileRow = (addr >> 0x8) & 0b1111;
+			bool isRightHalf = (addr >> 0xC) & 0b1;
+			uint32_t* buffer = isRightHalf ? pixel_buffer_right : pixel_buffer_left;
+			uint8_t val = mNes->cart->v_read(addr);
+			for (int bit = 7; bit >= 0; bit--) {
+				uint32_t pixel = (0x400 * tileRow) + (0x80 * fineYOffset) + (0x8 * tileCol) + (7 - bit);
+				if (!isUpperPlane) {
+					// overwrite the pixel - the lower plane value always comes first
+					buffer[pixel] = nes::test_bit(val, bit) ? 0x003F3F3F : 0;
+				} else {
+					buffer[pixel] += nes::test_bit(val, bit) ? 0x007F7F7F : 0;
+				}
 			}
 		}
-		SDL_UpdateTexture(my_texture, nullptr, pixel_buffer, my_texture_width * sizeof(uint32_t));
+
+		SDL_UpdateTexture(texture_left, nullptr, pixel_buffer_left, texture_width * sizeof(uint32_t));
+		SDL_UpdateTexture(texture_right, nullptr, pixel_buffer_right, texture_width * sizeof(uint32_t));
 	}
 
-	ImGui::Image((void*)(intptr_t)my_texture, ImVec2(my_texture_width, my_texture_height));
+	ImGui::Image((void*)(intptr_t)texture_left, ImVec2(texture_width, texture_height));
 	ImGui::SameLine();
-	ImGui::Image((void*)(intptr_t)my_texture, ImVec2(my_texture_width, my_texture_height));
+	ImGui::Image((void*)(intptr_t)texture_right, ImVec2(texture_width, texture_height));
 
 	ImGui::End();
 }

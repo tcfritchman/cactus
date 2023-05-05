@@ -1,6 +1,8 @@
 #include "Cartridge.h"
 #include <iostream>
 
+// NROM Cart
+
 uint8_t Cartridge::read(uint16_t address)
 {
 	if (address >= PRG_ROM_START) {
@@ -20,7 +22,7 @@ uint8_t Cartridge::v_read(uint16_t address)
 {
 	if (address < CHR_ROM_ADDRESS_COUNT) {
 		int index = address % chr_rom_size;
-		return prg_rom[index];
+		return chr_rom[index];
 	}
 	std::printf("Illegal video read - Cartridge\n");
 	return 0;
