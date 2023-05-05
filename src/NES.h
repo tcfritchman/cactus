@@ -13,6 +13,7 @@ class NES
 	APU* apu;
 	Cartridge* cart;
 	DataBus* dataBus;
+	VideoRAM* vram;
 	VideoDataBus* videoDataBus;
 	CPU* cpu;
 
