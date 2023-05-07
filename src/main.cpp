@@ -5,6 +5,12 @@
 #include "Util.h"
 #include <SDL.h>
 
+enum OperatingMode {
+	STEP_CYCLE,
+	STEP_CPU_INSTR,
+	REALTIME
+};
+
 int main(int argc, char* argv[])
 {
 	auto filename = argv[1];
@@ -15,6 +21,7 @@ int main(int argc, char* argv[])
 	auto chr_rom = rom.GetCharacterRomData();
 
 	NES* nes = new NES(rom);
+	OperatingMode mode = STEP_CPU_INSTR;
 	bool quit = false;
 	bool step = false;
 	SDL_Event event;
@@ -47,11 +54,28 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		// Step the CPU if needed
-		if (step)
+		switch (mode)
 		{
-			nes->cpu->Cycle();
-			step = false;
+		case STEP_CYCLE:
+			if (step) {
+				nes->Tick();
+				step = false;
+			}
+			break;
+		case STEP_CPU_INSTR:
+			if (step)
+			{
+				do
+				{
+					nes->Tick();
+				} while (nes->cpu->GetRemainingCycles() > 0);
+				step = false;
+			}
+			break;
+		case REALTIME:
+			// TODO: Fixed timing
+			nes->Tick();
+			break;
 		}
 
 		ui.Redraw();
