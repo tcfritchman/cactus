@@ -36,6 +36,7 @@ class CPU
 
 	State GetState();
 	Operation GetOperation(uint8_t op_code);
+	size_t GetRemainingCycles();
 
 	explicit CPU(DataBus* mBus);
 	CPU() = delete;
@@ -56,6 +57,7 @@ class CPU
 	bool mNegativeFlag = false;
 
 	uint8_t mCurrentOpCode = 0;
+	size_t mCyclesRemaining = 0;
 	uint8_t mAddrHi = 0;
 	uint8_t mAddrLo = 0;
 	uint16_t mAddr = 0;

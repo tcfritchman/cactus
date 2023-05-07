@@ -20,6 +20,8 @@ class NES
 	NES(const INesRom& rom);
 	NES() = delete;
 	~NES();
+
+	void Tick();
 };
 
 #endif //NES_EMULATOR_SRC_NES_H_

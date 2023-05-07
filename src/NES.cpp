@@ -26,3 +26,11 @@ NES::~NES()
 	delete (cart);
 	std::printf("Destroyed NES\n");
 }
+
+void NES::Tick()
+{
+	cpu->Cycle();
+	ppu->Cycle();
+	ppu->Cycle();
+	ppu->Cycle();
+}

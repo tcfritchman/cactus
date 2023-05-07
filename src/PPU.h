@@ -13,6 +13,8 @@ class PPU : public MemoryDevice
 	PPU(VideoDataBus* dataBus);
 	virtual ~PPU();
 
+	void Cycle();
+
 	// PPU Register CPU Memory Map
 	static const uint16_t START_ADDRESS = 0x2000;
 	static const uint16_t PHYSICAL_SIZE = 0x8;

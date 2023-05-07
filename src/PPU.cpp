@@ -20,3 +20,8 @@ PPU::~PPU()
 {
 	std::printf("Destroyed PPU\n");
 }
+
+void PPU::Cycle()
+{
+	// TODO
+}
