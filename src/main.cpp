@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	auto chr_rom = rom.GetCharacterRomData();
 
 	NES* nes = new NES(rom);
-	OperatingMode mode = STEP_CPU_INSTR;
+	OperatingMode mode = STEP_CYCLE;
 	bool quit = false;
 	bool step = false;
 	SDL_Event event;
