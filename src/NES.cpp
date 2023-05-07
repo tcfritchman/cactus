@@ -4,9 +4,9 @@
 NES::NES(const INesRom& rom)
 {
 	cart = new Cartridge(rom);
-	ppu = new PPU();
 	vram = new VideoRAM();
 	videoDataBus = new VideoDataBus(cart, vram);
+	ppu = new PPU(videoDataBus);
 	ram = new RAM();
 	apu = new APU();
 	dataBus = new DataBus(ram, ppu, apu, cart);
@@ -20,9 +20,9 @@ NES::~NES()
 	delete (dataBus);
 	delete (apu);
 	delete (ram);
+	delete (ppu);
 	delete (videoDataBus);
 	delete (vram);
-	delete (ppu);
 	delete (cart);
 	std::printf("Destroyed NES\n");
 }
