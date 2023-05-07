@@ -18,6 +18,7 @@ void CPU::Cycle()
 	else
 	{
 		mCyclesRemaining--;
+		// TODO: Add additional cycles in conditional branch instructions
 	}
 }
 
