@@ -119,7 +119,7 @@ void CPU::Absolute()
 {
 	mAddrLo = mBus->read(mRegPC + 1);
 	mAddrHi = mBus->read(mRegPC + 2);
-	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
 	mData = mBus->read(mAddr);
 }
 
@@ -127,7 +127,7 @@ void CPU::AbsoluteX()
 {
 	mAddrLo = mBus->read(mRegPC + 1);
 	mAddrHi = mBus->read(mRegPC + 2);
-	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo + mRegX;
+	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo + mRegX;
 	mData = mBus->read(mAddr);
 }
 
@@ -135,7 +135,7 @@ void CPU::AbsoluteY()
 {
 	mAddrLo = mBus->read(mRegPC + 1);
 	mAddrHi = mBus->read(mRegPC + 2);
-	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo + mRegY;
+	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo + mRegY;
 	mData = mBus->read(mAddr);
 }
 
@@ -143,10 +143,10 @@ void CPU::Indirect()
 {
 	auto indirect_lo = mBus->read(mRegPC + 1);
 	auto indirect_hi = mBus->read(mRegPC + 2);
-	auto indirect_addr = (((uint16_t)indirect_hi) << 8) + indirect_lo;
+	auto indirect_addr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo;
 	mAddrLo = mBus->read(indirect_addr);
 	mAddrHi = mBus->read(indirect_addr + 1);
-	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
 	mData = mBus->read(mAddr); // Not used
 }
 
@@ -156,7 +156,7 @@ void CPU::IndexedIndirect()
 	uint8_t indirect_addr = indirect_zero_page + mRegX;
 	mAddrLo = mBus->read(indirect_addr);
 	mAddrHi = mBus->read(indirect_addr + 1);
-	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
 	mData = mBus->read(mAddr);
 }
 
@@ -165,10 +165,10 @@ void CPU::IndirectIndexed()
 	auto indirect_zero_page = mBus->read(mRegPC + 1);
 	auto indirect_lo = mBus->read(indirect_zero_page + 1);
 	auto indirect_hi = mBus->read(indirect_zero_page + 2);
-	auto indirect_addr = (((uint16_t)indirect_hi) << 8) + indirect_lo + mRegY;
+	auto indirect_addr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo + mRegY;
 	mAddrLo = mBus->read(indirect_addr);
 	mAddrHi = mBus->read(indirect_addr + 1);
-	mAddr = (((uint16_t)mAddrHi) << 8) + mAddrLo;
+	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
 	mData = mBus->read(mAddr);
 }
 
@@ -312,7 +312,7 @@ void CPU::PLP()
 
 void CPU::ADC()
 {
-	bool isCarry = (uint16_t)mRegA + mData + mCarryFlag > 0xFF;
+	bool isCarry = static_cast<uint16_t>(mRegA) + mData + mCarryFlag > 0xFF;
 	bool isOverflow = false; // TODO
 
 	mRegA += mData;
@@ -326,7 +326,7 @@ void CPU::ADC()
 
 void CPU::SBC()
 {
-	bool isCarry = (uint16_t)mRegA - mData - (1 - mCarryFlag) > 0xFF;
+	bool isCarry = static_cast<uint16_t>(mRegA) - mData - (1 - mCarryFlag) > 0xFF;
 	bool isOverflow = false; // TODO
 
 	mRegA -= mData;

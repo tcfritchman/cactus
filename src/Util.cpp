@@ -14,7 +14,7 @@ uint8_t nes::lo_byte(uint16_t value)
 
 uint16_t nes::address(uint8_t lo_byte, uint8_t hi_byte)
 {
-	return ((uint16_t)hi_byte << 8) | (uint16_t)lo_byte;
+	return (static_cast<uint16_t>(hi_byte) << 8) | (uint16_t)lo_byte;
 }
 
 bool nes::test_bit(uint8_t value, int bit)
@@ -48,6 +48,6 @@ std::vector<uint8_t> nes::read_file_bytes(const char* filename)
 	ifs.read(result.data(), pos);
 
 	// Convert to vector<uint8_t>
-	auto s = (uint8_t*)result.data();
+	auto s = reinterpret_cast<uint8_t*>(result.data());
 	return std::vector<uint8_t>{ s, s + pos };
 }
