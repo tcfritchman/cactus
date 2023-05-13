@@ -29,6 +29,8 @@ void CPU::IRQ()
 
 void CPU::Reset()
 {
+	mInterruptDisableFlag = true; // TODO: Is this correct?
+	// TODO: Probably reset some registers as well?
 	uint16_t reset_vector = nes::address(mBus->read(0xFFFC), mBus->read(0xFFFD));
 	mRegPC = reset_vector;
 }

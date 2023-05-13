@@ -56,6 +56,10 @@ class CPU
 	bool mOverflowFlag = false;
 	bool mNegativeFlag = false;
 
+	// TODO
+	bool mIsInterrupted = false;
+	uint16_t mInterruptAddress = 0;
+
 	uint8_t mCurrentOpCode = 0;
 	size_t mCyclesRemaining = 0;
 	uint8_t mAddrHi = 0;
