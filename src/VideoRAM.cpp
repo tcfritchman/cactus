@@ -10,7 +10,9 @@ uint8_t VideoRAM::v_read(uint16_t address)
 	else if (address >= PALETTE_RAM_START_ADDRESS && address < PALETTE_RAM_END_ADDRESS)
 	{
 		return palette_ram[(address - PALETTE_RAM_START_ADDRESS) % PALETTE_RAM_PHYSICAL_SIZE];
-	} else {
+	}
+	else
+	{
 		std::cout << "Illegal read - VRAM" << std::endl;
 		exit(1);
 	}
@@ -26,7 +28,9 @@ void VideoRAM::v_write(uint8_t data, uint16_t address)
 	else if (address >= PALETTE_RAM_START_ADDRESS && address < PALETTE_RAM_END_ADDRESS)
 	{
 		palette_ram[(address - PALETTE_RAM_START_ADDRESS) % PALETTE_RAM_PHYSICAL_SIZE] = data;
-	} else {
+	}
+	else
+	{
 		std::cout << "Illegal write - VRAM" << std::endl;
 		exit(1);
 	}

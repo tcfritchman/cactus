@@ -6,7 +6,8 @@
 #include "INesRom.h"
 #include "Util.h"
 
-enum OperatingMode {
+enum OperatingMode
+{
 	STEP_CYCLE,
 	STEP_CPU_INSTR,
 	REALTIME
@@ -17,7 +18,7 @@ int main(int argc, char* argv[])
 	auto filename = argv[1];
 	auto rom_bytes = nes::read_file_bytes(filename);
 	INesRom rom(rom_bytes);
-	auto nes = std::make_shared<NES> (rom);
+	auto nes = std::make_shared<NES>(rom);
 
 	auto mode = STEP_CYCLE;
 	auto quit = false;
@@ -45,7 +46,8 @@ int main(int argc, char* argv[])
 				quit = true;
 				break;
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_SPACE) {
+				if (event.key.keysym.sym == SDLK_SPACE)
+				{
 					step = true;
 				}
 				break;
@@ -55,7 +57,8 @@ int main(int argc, char* argv[])
 		switch (mode)
 		{
 		case STEP_CYCLE:
-			if (step) {
+			if (step)
+			{
 				nes->Tick();
 				step = false;
 			}

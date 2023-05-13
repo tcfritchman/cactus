@@ -13,7 +13,6 @@ class Cartridge : public virtual MemoryDevice, public virtual VideoMemoryDevice
 	uint8_t v_read(uint16_t address) override;
 	void v_write(uint8_t data, uint16_t address) override;
 
-
 	explicit Cartridge(const INesRom& rom);
 	Cartridge() = delete;
 	virtual ~Cartridge();
