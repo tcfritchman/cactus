@@ -52,12 +52,12 @@ Operation CPU::GetOperation(uint8_t op_code)
 	return OPERATIONS[op_code];
 }
 
-size_t CPU::GetRemainingCycles()
+size_t CPU::GetRemainingCycles() const
 {
 	return mCyclesRemaining;
 }
 
-CPU::CPU(DataBus* mBus) : mBus(mBus)
+CPU::CPU(std::shared_ptr<DataBus> mBus) : mBus(std::move(mBus))
 {
 	CPU::Reset();
 	std::printf("Created CPU\n");
@@ -313,7 +313,7 @@ void CPU::PLP()
 void CPU::ADC()
 {
 	bool isCarry = (uint16_t)mRegA + mData + mCarryFlag > 0xFF;
-	bool isOverflow = 0; // TODO
+	bool isOverflow = false; // TODO
 
 	mRegA += mData;
 	mRegA += mCarryFlag;
@@ -327,7 +327,7 @@ void CPU::ADC()
 void CPU::SBC()
 {
 	bool isCarry = (uint16_t)mRegA - mData - (1 - mCarryFlag) > 0xFF;
-	bool isOverflow = 0; // TODO
+	bool isOverflow = false; // TODO
 
 	mRegA -= mData;
 	mRegA -= 1 - mCarryFlag;
@@ -608,8 +608,8 @@ void CPU::BRK()
 	uint8_t return_addr_hi = nes::hi_byte(return_addr);
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
 	uint8_t status = GetFlags();
-	nes::set_bit(&status, 4); // How to handle IRQ/NMI not setting this bit
-	nes::set_bit(&status, 5);
+	nes::set_bit(std::make_unique<uint8_t>(status), 4); // How to handle IRQ/NMI not setting this bit
+	nes::set_bit(std::make_unique<uint8_t>(status), 5);
 	mBus->write(return_addr_hi, mRegSP);
 	mRegSP--;
 	mBus->write(return_addr_lo, mRegSP);

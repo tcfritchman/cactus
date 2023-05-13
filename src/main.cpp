@@ -1,9 +1,10 @@
+#include <memory>
+#include <SDL.h>
 #include "imgui/imgui_impl_sdl2.h"
 #include "NES.h"
 #include "UI.h"
 #include "INesRom.h"
 #include "Util.h"
-#include <SDL.h>
 
 enum OperatingMode {
 	STEP_CYCLE,
@@ -16,14 +17,11 @@ int main(int argc, char* argv[])
 	auto filename = argv[1];
 	auto rom_bytes = nes::read_file_bytes(filename);
 	INesRom rom(rom_bytes);
+	auto nes = std::make_shared<NES> (rom);
 
-	auto prg_rom = rom.GetProgramRomData();
-	auto chr_rom = rom.GetCharacterRomData();
-
-	NES* nes = new NES(rom);
-	OperatingMode mode = STEP_CYCLE;
-	bool quit = false;
-	bool step = false;
+	auto mode = STEP_CYCLE;
+	auto quit = false;
+	auto step = false;
 	SDL_Event event;
 
 	SDL_Init(SDL_INIT_VIDEO);
@@ -31,7 +29,7 @@ int main(int argc, char* argv[])
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 900, 600, 0);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
-	UI ui = UI::Init(window, renderer, nes);
+	auto ui = UI::Init(window, renderer, nes);
 
 	while (!quit)
 	{
@@ -39,7 +37,7 @@ int main(int argc, char* argv[])
 
 		while (SDL_PollEvent(&event))
 		{
-			ui.HandleEvent(&event);
+			UI::HandleEvent(&event);
 
 			switch (event.type)
 			{
@@ -83,7 +81,6 @@ int main(int argc, char* argv[])
 		SDL_RenderPresent(renderer);
 	}
 
-	delete (nes);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

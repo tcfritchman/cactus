@@ -9,10 +9,10 @@ class UI
 {
 
  public:
-	static UI Init(SDL_Window* window, SDL_Renderer* renderer, NES* nes);
+	static UI Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<NES> nes);
 
 	void Redraw();
-	void HandleEvent(SDL_Event* event);
+	static void HandleEvent(SDL_Event* event);
 
 	UI() = delete;
 
@@ -20,11 +20,11 @@ class UI
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
 	ImGuiIO& io;
-	NES* mNes;
+	std::shared_ptr<NES> mNes;
 
 	const ImVec4 CLEAR_COLOR = ImVec4(56.0f, 56.0f, 56.0f, 255.0f);
 
-	UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, NES* mNes);
+	UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<NES> mNes);
 
 	void DrawCPUDebug();
 	void DrawMemoryDebug();

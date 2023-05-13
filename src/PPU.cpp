@@ -11,7 +11,7 @@ void PPU::write(uint8_t data, uint16_t address)
 
 }
 
-PPU::PPU(VideoDataBus* dataBus) : mDataBus(dataBus)
+PPU::PPU(std::shared_ptr<VideoDataBus> dataBus) : mDataBus(std::move(dataBus))
 {
 	std::printf("Created PPU\n");
 }

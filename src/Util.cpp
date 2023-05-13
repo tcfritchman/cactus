@@ -1,4 +1,3 @@
-#include <cstdint>
 #include <fstream>
 #include <vector>
 #include "Util.h"
@@ -23,12 +22,12 @@ bool nes::test_bit(uint8_t value, int bit)
 	return (1 << bit) & value;
 }
 
-void nes::set_bit(uint8_t* value, int bit)
+void nes::set_bit(std::unique_ptr<uint8_t> value, int bit)
 {
 	*value = (1 << bit) & *value;
 }
 
-void nes::clear_bit(uint8_t* value, int bit)
+void nes::clear_bit(std::unique_ptr<uint8_t> value, int bit)
 {
 	*value = (~(1 << bit)) & *value;
 }

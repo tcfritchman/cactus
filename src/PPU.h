@@ -10,7 +10,7 @@ class PPU : public MemoryDevice
 	uint8_t read(uint16_t address) override;
 	void write(uint8_t data, uint16_t address) override;
 
-	PPU(VideoDataBus* dataBus);
+	explicit PPU(std::shared_ptr<VideoDataBus> dataBus);
 	virtual ~PPU();
 
 	void Cycle();
@@ -33,7 +33,7 @@ class PPU : public MemoryDevice
 	static const uint16_t OAMDMA = 0x4014;
 
  private:
-	VideoDataBus* mDataBus;
+	std::shared_ptr<VideoDataBus> mDataBus;
 
 	uint8_t ReadPPUSTATUS();
 	uint8_t ReadOAMDATA();

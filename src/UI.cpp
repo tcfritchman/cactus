@@ -4,8 +4,9 @@
 #include "imgui/imgui_impl_sdl2.h"
 #include "imgui/imgui_impl_sdlrenderer.h"
 #include <SDL.h>
+#include <utility>
 
-UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, NES* nes)
+UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<NES> nes)
 {
 	// Initialize Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -20,7 +21,7 @@ UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, NES* nes)
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer_Init(renderer);
 
-	return UI{ window, renderer, io, nes };
+	return UI{ window, renderer, io, std::move(nes) };
 }
 
 void UI::Redraw()
@@ -467,8 +468,8 @@ void UI::DrawPatternTableDebug()
 	ImGui::End();
 }
 
-UI::UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, NES* mNes)
-	: mWindow(mWindow), mRenderer(mRenderer), io(io), mNes(mNes)
+UI::UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<NES> mNes)
+	: mWindow(mWindow), mRenderer(mRenderer), io(io), mNes(std::move(mNes))
 {
 }
 

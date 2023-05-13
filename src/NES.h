@@ -8,16 +8,16 @@
 class NES
 {
  public:
-	RAM* ram;
-	PPU* ppu;
-	APU* apu;
-	Cartridge* cart;
-	DataBus* dataBus;
-	VideoRAM* vram;
-	VideoDataBus* videoDataBus;
-	CPU* cpu;
+	std::shared_ptr<RAM> ram;
+	std::shared_ptr<PPU> ppu;
+	std::shared_ptr<APU> apu;
+	std::shared_ptr<Cartridge> cart;
+	std::shared_ptr<DataBus> dataBus;
+	std::shared_ptr<VideoRAM> vram;
+	std::shared_ptr<VideoDataBus> videoDataBus;
+	std::shared_ptr<CPU> cpu;
 
-	NES(const INesRom& rom);
+	explicit NES(const INesRom& rom);
 	NES() = delete;
 	~NES();
 

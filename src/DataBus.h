@@ -14,17 +14,20 @@ class DataBus : public MemoryDevice
 	uint8_t read(uint16_t address) override;
 	void write(uint8_t data, uint16_t address) override;
 
-	explicit DataBus(RAM* mRam, PPU* mPPU, APU* mAPU, Cartridge* mCart);
+	DataBus(std::shared_ptr<RAM> mRam,
+		std::shared_ptr<PPU> mPPU,
+		std::shared_ptr<APU> mAPU,
+		std::shared_ptr<Cartridge> mCart);
 	DataBus() = delete;
 	virtual ~DataBus();
 
  private:
-	RAM* mRAM;
-	PPU* mPPU;
-	APU* mAPU;
-	Cartridge* mCart;
+	std::shared_ptr<RAM> mRAM;
+	std::shared_ptr<PPU> mPPU;
+	std::shared_ptr<APU> mAPU;
+	std::shared_ptr<Cartridge> mCart;
 
-	MemoryDevice* RouteToMemoryDevice(uint16_t address);
+	std::shared_ptr<MemoryDevice> RouteToMemoryDevice(uint16_t address);
 };
 
 #endif //NES_EMULATOR_SRC_DATABUS_H_

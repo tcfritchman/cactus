@@ -11,9 +11,9 @@ namespace nes
 
 	bool test_bit(uint8_t value, int bit);
 
-	void set_bit(uint8_t* value, int bit);
+	void set_bit(std::unique_ptr<uint8_t> value, int bit);
 
-	void clear_bit(uint8_t* value, int bit);
+	void clear_bit(std::unique_ptr<uint8_t> value, int bit);
 
 	std::vector<uint8_t> read_file_bytes(const char* filename);
 }

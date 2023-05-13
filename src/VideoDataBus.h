@@ -11,13 +11,13 @@ class VideoDataBus : public VideoMemoryDevice
 	uint8_t v_read(uint16_t address) override;
 	void v_write(uint8_t data, uint16_t address) override;
 
-	explicit VideoDataBus(Cartridge* cart, VideoRAM* vram);
+	explicit VideoDataBus(std::shared_ptr<Cartridge> cart, std::shared_ptr<VideoRAM> vram);
 	VideoDataBus() = delete;
 	~VideoDataBus();
 
  private:
-	Cartridge* cart;
-	VideoRAM* vram;
+	std::shared_ptr<Cartridge> cart;
+	std::shared_ptr<VideoRAM> vram;
 };
 
 #endif //NES_EMULATOR_SRC_VIDEODATABUS_H_
