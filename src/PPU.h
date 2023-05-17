@@ -35,6 +35,28 @@ class PPU : public MemoryDevice
  private:
 	std::shared_ptr<VideoDataBus> mDataBus;
 
+	bool mGenerateNMIOnVBlank = false;
+	int mSpriteHeight = 8;
+	int mSpriteWidth = 8;
+	uint16_t mBackgroundPatternTableAddress = 0x0000;
+	uint16_t mSpritePatternTableAddress = 0x0000;
+	uint16_t mVRAMAddressIncrement = 1;
+	uint16_t mBaseNametableAddress = 0x2000; // OR Add 256 to the X scroll position, Add 240 to the Y scroll position
+	bool mDisplayGrayscale = false;
+	bool mShowBackgroundLeftmostColumn = false;
+	bool mShowSpritesLeftmostColumn = false;
+	bool mShowBackground = false;
+	bool mShowSprites = false;
+	bool mEmphasizeRed = false;
+	bool mEmphasizeGreen = false;
+	bool mEmphasizeBlue = false;
+	uint8_t mOAMAddress = 0x0000;
+	int mHorizontalScrollPosition = 0;
+	int mVerticalScrollPosition = 0;
+	int mPPUScrollWriteCount = 0;
+	uint16_t mPPUAddress = 0x0000;
+	int mPPUAddrWriteCount = 0;
+
 	uint8_t ReadPPUSTATUS();
 	uint8_t ReadOAMDATA();
 	uint8_t ReadPPUDATA();
