@@ -12,7 +12,7 @@ void PPU::write(uint8_t data, uint16_t address)
 
 }
 
-PPU::PPU(std::shared_ptr<VideoDataBus> dataBus) : mDataBus(std::move(dataBus))
+PPU::PPU(std::shared_ptr<VideoDataBus> videoDataBus) : mVideoDataBus(std::move(videoDataBus))
 {
 	std::printf("Created PPU\n");
 }
@@ -69,12 +69,12 @@ void PPU::WritePPUMASK(uint8_t value)
 
 void PPU::WriteOAMADDR(uint8_t value)
 {
-	mOAMAddress = value;
+	mOAMAddress = static_cast<uint16_t>(value);
 }
 
 void PPU::WriteOAMDATA(uint8_t value)
 {
-	// TODO
+	mOAM[mOAMAddress] = value;
 }
 
 void PPU::WritePPUSCROLL(uint8_t value)
@@ -107,10 +107,11 @@ void PPU::WritePPUADDR(uint8_t value)
 
 void PPU::WritePPUDATA(uint8_t value)
 {
-	// TODO
+	mVideoDataBus->v_write(mPPUAddress, value);
 }
 
-void PPU::WritePPUDMA(uint8_t value)
+void PPU::WriteOAMDMA(uint8_t value)
 {
-	// TODO
+	mOAMDMAAddress = static_cast<uint16_t>(value) << 8;
+	// TODO: Initiate DMA
 }

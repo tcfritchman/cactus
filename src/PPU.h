@@ -10,7 +10,7 @@ class PPU : public MemoryDevice
 	uint8_t read(uint16_t address) override;
 	void write(uint8_t data, uint16_t address) override;
 
-	explicit PPU(std::shared_ptr<VideoDataBus> dataBus);
+	explicit PPU(std::shared_ptr<VideoDataBus> videoDataBus);
 	virtual ~PPU();
 
 	void Cycle();
@@ -20,6 +20,9 @@ class PPU : public MemoryDevice
 	static const uint16_t PHYSICAL_SIZE = 0x8;
 	static const uint16_t ADDRESS_COUNT = 0x2000;
 	static const uint16_t END_ADDRESS = START_ADDRESS + ADDRESS_COUNT;
+
+	// OAM
+	static const uint16_t OAM_SIZE = 256;
 
 	// PPU Registers
 	static const uint16_t PPUCTRL = 0x2000;
@@ -33,7 +36,7 @@ class PPU : public MemoryDevice
 	static const uint16_t OAMDMA = 0x4014;
 
  private:
-	std::shared_ptr<VideoDataBus> mDataBus;
+	std::shared_ptr<VideoDataBus> mVideoDataBus;
 
 	bool mGenerateNMIOnVBlank = false;
 	int mSpriteHeight = 8;
@@ -50,12 +53,14 @@ class PPU : public MemoryDevice
 	bool mEmphasizeRed = false;
 	bool mEmphasizeGreen = false;
 	bool mEmphasizeBlue = false;
-	uint8_t mOAMAddress = 0x0000;
+	uint16_t mOAMAddress = 0x0000;
 	int mHorizontalScrollPosition = 0;
 	int mVerticalScrollPosition = 0;
 	int mPPUScrollWriteCount = 0;
 	uint16_t mPPUAddress = 0x0000;
 	int mPPUAddrWriteCount = 0;
+	uint16_t mOAMDMAAddress = 0x0000;
+	std::vector<uint8_t> mOAM = std::vector<uint8_t>(OAM_SIZE);
 
 	uint8_t ReadPPUSTATUS();
 	uint8_t ReadOAMDATA();
@@ -68,7 +73,7 @@ class PPU : public MemoryDevice
 	void WritePPUSCROLL(uint8_t value);
 	void WritePPUADDR(uint8_t value);
 	void WritePPUDATA(uint8_t value);
-	void WritePPUDMA(uint8_t value);
+	void WriteOAMDMA(uint8_t value);
 
 	// TODO: NMI HANDLER
 	// TODO: Include render completed handler
