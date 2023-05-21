@@ -19,10 +19,12 @@ NES::~NES()
 	std::printf("Destroyed NES\n");
 }
 
-void NES::Tick()
+void NES::Cycle()
 {
-	cpu->Cycle();
+	if ((mCycleCount % 3) == 0)
+	{
+		cpu->Cycle();
+	}
 	ppu->Cycle();
-	ppu->Cycle();
-	ppu->Cycle();
+	mCycleCount++;
 }

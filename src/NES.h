@@ -21,7 +21,10 @@ class NES
 	NES() = delete;
 	~NES();
 
-	void Tick();
+	void Cycle();
+
+ private:
+	long mCycleCount = 0;
 };
 
 #endif //NES_EMULATOR_SRC_NES_H_

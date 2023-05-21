@@ -5,13 +5,7 @@
 #include "UI.h"
 #include "INesRom.h"
 #include "Util.h"
-
-enum OperatingMode
-{
-	STEP_CYCLE,
-	STEP_CPU_INSTR,
-	REALTIME
-};
+#include "Emulator.h"
 
 int main(int argc, char* argv[])
 {
@@ -19,16 +13,16 @@ int main(int argc, char* argv[])
 	auto rom_bytes = nes::read_file_bytes(filename);
 	INesRom rom(rom_bytes);
 	auto nes = std::make_shared<NES>(rom);
+	auto emulator = Emulator();
 
-	auto mode = STEP_CYCLE;
 	auto quit = false;
-	auto step = false;
 	SDL_Event event;
 
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window* window = SDL_CreateWindow("Untitled NES Emulator",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 900, 600, 0);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+	Uint64 ticksElapsed = SDL_GetTicks64();
 
 	auto ui = UI::Init(window, renderer, nes);
 
@@ -46,38 +40,19 @@ int main(int argc, char* argv[])
 				quit = true;
 				break;
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_SPACE)
+				if (event.key.keysym.sym == SDLK_SPACE && emulator.CanStep())
 				{
-					step = true;
+					emulator.Step();
 				}
 				break;
 			}
 		}
 
-		switch (mode)
-		{
-		case STEP_CYCLE:
-			if (step)
-			{
-				nes->Tick();
-				step = false;
-			}
-			break;
-		case STEP_CPU_INSTR:
-			if (step)
-			{
-				do
-				{
-					nes->Tick();
-				} while (nes->cpu->GetRemainingCycles() > 0);
-				step = false;
-			}
-			break;
-		case REALTIME:
-			// TODO: Fixed timing
-			nes->Tick();
-			break;
-		}
+		Uint64 ticks = SDL_GetTicks64();
+		Uint64 deltaTicks = ticks - ticksElapsed;
+		ticksElapsed = ticks;
+
+		emulator.Tick(deltaTicks, nes);
 
 		ui.Redraw();
 
