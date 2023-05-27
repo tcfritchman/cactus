@@ -1,19 +1,12 @@
-#include <memory>
 #include <SDL.h>
 #include "imgui/imgui_impl_sdl2.h"
-#include "NES.h"
 #include "UI.h"
-#include "INesRom.h"
-#include "Util.h"
 #include "Emulator.h"
 
 int main(int argc, char* argv[])
 {
 	auto filename = argv[1];
-	auto rom_bytes = nes::read_file_bytes(filename);
-	INesRom rom(rom_bytes);
-	auto nes = std::make_shared<NES>(rom);
-	auto emulator = Emulator();
+	auto emulator = Emulator(filename);
 
 	auto quit = false;
 	SDL_Event event;
@@ -24,7 +17,8 @@ int main(int argc, char* argv[])
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 	Uint64 ticksElapsed = SDL_GetTicks64();
 
-	auto ui = UI::Init(window, renderer, nes);
+	// TODO: Pass emulator only
+	auto ui = UI::Init(window, renderer, emulator.mNes);
 
 	while (!quit)
 	{
@@ -52,7 +46,7 @@ int main(int argc, char* argv[])
 		Uint64 deltaTicks = ticks - ticksElapsed;
 		ticksElapsed = ticks;
 
-		emulator.Tick(deltaTicks, nes);
+		emulator.Tick(deltaTicks);
 
 		ui.Redraw();
 

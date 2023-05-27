@@ -15,7 +15,7 @@ namespace nes
 
 	void clear_bit(std::unique_ptr<uint8_t> value, int bit);
 
-	std::vector<uint8_t> read_file_bytes(const char* filename);
+	std::vector<uint8_t> read_file_bytes(const std::string& filename);
 }
 
 #endif //NES_EMULATOR_SRC_UTIL_H_

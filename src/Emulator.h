@@ -9,14 +9,15 @@ class Emulator
 {
  public:
 	// TODO: Input handling for controls
-	void Tick(uint64_t deltaTime, const std::shared_ptr<NES>& nes);
+	void Tick(uint64_t deltaTime);
 
 	void Pause();
 	void Unpause();
 	bool IsPaused();
-	void Reset();
+	void HardReset();
 	void LoadRom(const std::string &filename);
 	void Quit();
+	bool ShouldQuit();
 
 	void Break();
 	bool CanBreak();
@@ -28,8 +29,14 @@ class Emulator
 	void SetStepTypeCpuInstr();
 	OperatingMode GetStepType();
 
+	explicit Emulator(const std::string &filename);
+
+	std::shared_ptr<NES> mNes;
+
  private:
-	EmulatorState mState;
+	std::unique_ptr<EmulatorState> mState;
+	std::unique_ptr<INesRom> mRom;
+	bool mShouldQuit = false;
 };
 
 #endif //NES_EMULATOR_SRC_EMULATOR_H_

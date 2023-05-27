@@ -1,33 +1,34 @@
 #include "Emulator.h"
+#include "Util.h"
 
-void Emulator::Tick(uint64_t deltaTime, const std::shared_ptr<NES>& nes)
+void Emulator::Tick(uint64_t deltaTime)
 {
-	if (mState.mIsPaused) return;
+	if (mState->mIsPaused) return;
 
-	switch (mState.mOperatingMode)
+	switch (mState->mOperatingMode)
 	{
 	case STEP_CYCLE:
-		if (mState.mIsStepped)
+		if (mState->mIsStepped)
 		{
-			nes->Cycle();
-			mState.mIsStepped = false;
+			mNes->Cycle();
+			mState->mIsStepped = false;
 		}
 		break;
 	case STEP_CPU_INSTR:
-		if (mState.mIsStepped)
+		if (mState->mIsStepped)
 		{
 			do
 			{
-				nes->Cycle();
-			} while (nes->cpu->GetRemainingCycles() > 0);
-			mState.mIsStepped = false;
+				mNes->Cycle();
+			} while (mNes->cpu->GetRemainingCycles() > 0);
+			mState->mIsStepped = false;
 		}
 		break;
 	case REALTIME:
-		uint64_t cycles = (deltaTime * mState.cyclesPerSecond) / 1000;
+		uint64_t cycles = (deltaTime * mState->cyclesPerSecond) / 1000;
 		for (int i = 0; i < cycles; i++)
 		{
-			nes->Cycle();
+			mNes->Cycle();
 		}
 		break;
 	}
@@ -35,84 +36,97 @@ void Emulator::Tick(uint64_t deltaTime, const std::shared_ptr<NES>& nes)
 
 void Emulator::Pause()
 {
-	mState.mIsPaused = true;
+	mState->mIsPaused = true;
 }
 
 void Emulator::Unpause()
 {
-	mState.mIsPaused = false;
+	mState->mIsPaused = false;
 }
 
 bool Emulator::IsPaused()
 {
-	return mState.mIsPaused;
+	return mState->mIsPaused;
 }
 
 
-void Emulator::Reset()
+void Emulator::HardReset()
 {
-// TODO
+	mNes = std::make_shared<NES>(*mRom);
+	mState = std::make_unique<EmulatorState>();
 }
 
 void Emulator::LoadRom(const std::string& filename)
 {
-// TODO
+	auto rom_bytes = nes::read_file_bytes(filename);
+	mRom = std::make_unique<INesRom>(rom_bytes);
+	HardReset();
 }
 
 void Emulator::Quit()
 {
-// TODO
+	mShouldQuit = true;
+}
+
+bool Emulator::ShouldQuit()
+{
+	return mShouldQuit;
 }
 
 void Emulator::Break()
 {
-	mState.mOperatingMode = mState.mStepType;
+	mState->mOperatingMode = mState->mStepType;
 }
 
 bool Emulator::CanBreak()
 {
-	return mState.mOperatingMode == REALTIME;
+	return mState->mOperatingMode == REALTIME;
 }
 
 void Emulator::Step()
 {
-	mState.mIsStepped = true;
+	mState->mIsStepped = true;
 }
 
 bool Emulator::CanStep()
 {
-	return mState.mOperatingMode == STEP_CYCLE || mState.mOperatingMode == STEP_CPU_INSTR;
+	return mState->mOperatingMode == STEP_CYCLE || mState->mOperatingMode == STEP_CPU_INSTR;
 }
 
 void Emulator::Continue()
 {
-	mState.mOperatingMode = REALTIME;
+	mState->mOperatingMode = REALTIME;
 }
 
 bool Emulator::CanContinue()
 {
-	return mState.mOperatingMode != REALTIME;
+	return mState->mOperatingMode != REALTIME;
 }
 
 void Emulator::SetStepTypeCycle()
 {
-	mState.mStepType = STEP_CYCLE;
-	if (mState.mOperatingMode != REALTIME)
+	mState->mStepType = STEP_CYCLE;
+	if (mState->mOperatingMode != REALTIME)
 	{
-		mState.mOperatingMode = STEP_CYCLE;
+		mState->mOperatingMode = STEP_CYCLE;
 	}
 }
 
 void Emulator::SetStepTypeCpuInstr()
 {
-	mState.mStepType = STEP_CPU_INSTR;
-	if (mState.mOperatingMode != REALTIME)
+	mState->mStepType = STEP_CPU_INSTR;
+	if (mState->mOperatingMode != REALTIME)
 	{
-		mState.mOperatingMode = STEP_CPU_INSTR;
+		mState->mOperatingMode = STEP_CPU_INSTR;
 	}
 }
 
 OperatingMode Emulator::GetStepType()
 {
-	return mState.mStepType;
+	return mState->mStepType;
+}
+
+Emulator::Emulator(const std::string& filename)
+{
+	LoadRom(filename);
 }

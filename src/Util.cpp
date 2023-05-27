@@ -32,7 +32,7 @@ void nes::clear_bit(std::unique_ptr<uint8_t> value, int bit)
 	*value = (~(1 << bit)) & *value;
 }
 
-std::vector<uint8_t> nes::read_file_bytes(const char* filename)
+std::vector<uint8_t> nes::read_file_bytes(const std::string& filename)
 {
 	std::ifstream ifs(filename, std::ios::binary | std::ios::ate);
 	std::ifstream::pos_type pos = ifs.tellg();
