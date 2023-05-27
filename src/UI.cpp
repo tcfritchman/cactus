@@ -6,7 +6,7 @@
 #include <SDL.h>
 #include <utility>
 
-UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<NES> nes)
+UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator> emulator)
 {
 	// Initialize Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -21,7 +21,7 @@ UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<NES> nes
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer_Init(renderer);
 
-	return UI{ window, renderer, io, std::move(nes) };
+	return UI{ window, renderer, io, std::move(emulator) };
 }
 
 void UI::Redraw()
@@ -93,7 +93,7 @@ void UI::DrawMainMenuBar()
 
 void UI::DrawCPUDebug()
 {
-	CPU::State state = mNes->cpu->GetState();
+	CPU::State state = mEmulator->mNes->cpu->GetState();
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
 	bool* p_open = nullptr;
@@ -125,8 +125,8 @@ void UI::DrawCPUDebug()
 
 				for (int row = 0; row < 20; row++)
 				{
-					uint8_t op_code = mNes->dataBus->read(current_pc);
-					Operation operation = mNes->cpu->GetOperation(op_code);
+					uint8_t op_code = mEmulator->mNes->dataBus->read(current_pc);
+					Operation operation = mEmulator->mNes->cpu->GetOperation(op_code);
 
 					if (current_pc + operation.bytes - 1 < current_pc)
 					{
@@ -151,14 +151,14 @@ void UI::DrawCPUDebug()
 					}
 					else if (operation.bytes == 2)
 					{
-						ImGui::Text("%02x %02x", op_code, mNes->dataBus->read(current_pc + 1));
+						ImGui::Text("%02x %02x", op_code, mEmulator->mNes->dataBus->read(current_pc + 1));
 					}
 					else
 					{
 						ImGui::Text("%02x %02x %02x",
 							op_code,
-							mNes->dataBus->read(current_pc + 1),
-							mNes->dataBus->read(current_pc + 2));
+							mEmulator->mNes->dataBus->read(current_pc + 1),
+							mEmulator->mNes->dataBus->read(current_pc + 2));
 					}
 
 					// Disassembled Instruction
@@ -175,57 +175,57 @@ void UI::DrawCPUDebug()
 						break;
 					case Operation::AddressingMode::IMMEDIATE:
 						ImGui::Text("%s #%d", operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ZERO_PAGE:
 						ImGui::Text("%s $%02x", operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ZERO_PAGE_X:
 						ImGui::Text("%s $%02x,X", operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ZERO_PAGE_Y:
 						ImGui::Text("%s $%02x,Y", operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::RELATIVE:
 						ImGui::Text("%s *$%+d", operation.mnemonic.c_str(),
-							static_cast<int8_t>(mNes->dataBus->read(current_pc + 1)));
+							static_cast<int8_t>(mEmulator->mNes->dataBus->read(current_pc + 1)));
 						break;
 					case Operation::AddressingMode::ABSOLUTE:
 						ImGui::Text("%s $%02x%02x",
 							operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 2),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 2),
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ABSOLUTE_X:
 						ImGui::Text("%s $%02x%02x,X",
 							operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 2),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 2),
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::ABSOLUTE_Y:
 						ImGui::Text("%s $%02x%02x,Y",
 							operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 2),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 2),
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::INDIRECT:
 						ImGui::Text("%s ($%02x%02x)",
 							operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 2),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 2),
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::INDEXED_INDIRECT:
 						ImGui::Text("%s ($%02x,X)",
 							operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					case Operation::AddressingMode::INDIRECT_INDEXED:
 						ImGui::Text("%s ($%02x),Y",
 							operation.mnemonic.c_str(),
-							mNes->dataBus->read(current_pc + 1));
+							mEmulator->mNes->dataBus->read(current_pc + 1));
 						break;
 					}
 
@@ -386,7 +386,7 @@ void UI::DrawMemoryDebug()
 
 			ImGui::TableNextRow();
 
-			uint8_t data = mNes->dataBus->read(addr);
+			uint8_t data = mEmulator->mNes->dataBus->read(addr);
 
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("%04x", addr);
@@ -445,7 +445,7 @@ void UI::DrawPatternTableDebug()
 			uint16_t tileRow = (addr >> 0x8) & 0b1111;
 			bool isRightHalf = (addr >> 0xC) & 0b1;
 			uint32_t* buffer = isRightHalf ? pixel_buffer_right : pixel_buffer_left;
-			uint8_t val = mNes->cart->v_read(addr);
+			uint8_t val = mEmulator->mNes->cart->v_read(addr);
 			for (int bit = 7; bit >= 0; bit--) {
 				uint32_t pixel = (0x400 * tileRow) + (0x80 * fineYOffset) + (0x8 * tileCol) + (7 - bit);
 				if (!isUpperPlane) {
@@ -468,8 +468,8 @@ void UI::DrawPatternTableDebug()
 	ImGui::End();
 }
 
-UI::UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<NES> mNes)
-	: mWindow(mWindow), mRenderer(mRenderer), io(io), mNes(std::move(mNes))
+UI::UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator)
+	: mWindow(mWindow), mRenderer(mRenderer), io(io), mEmulator(std::move(emulator))
 {
 }
 

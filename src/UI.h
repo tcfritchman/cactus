@@ -3,13 +3,14 @@
 
 #include "NES.h"
 #include "imgui/imgui.h"
+#include "Emulator.h"
 #include <SDL.h>
 
 class UI
 {
 
  public:
-	static UI Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<NES> nes);
+	static UI Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator> emulator);
 
 	void Redraw();
 	static void HandleEvent(SDL_Event* event);
@@ -20,11 +21,11 @@ class UI
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
 	ImGuiIO& io;
-	std::shared_ptr<NES> mNes;
+	std::shared_ptr<Emulator> mEmulator;
 
 	const ImVec4 CLEAR_COLOR = ImVec4(56.0f, 56.0f, 56.0f, 255.0f);
 
-	UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<NES> mNes);
+	UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator);
 
 	void DrawCPUDebug();
 	void DrawMemoryDebug();
