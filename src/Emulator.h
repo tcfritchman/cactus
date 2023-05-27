@@ -3,13 +3,7 @@
 
 #include <memory>
 #include "NES.h"
-
-enum OperatingMode
-{
-	STEP_CYCLE,
-	STEP_CPU_INSTR,
-	REALTIME
-};
+#include "EmulatorState.h"
 
 class Emulator
 {
@@ -20,6 +14,9 @@ class Emulator
 	void Pause();
 	void Unpause();
 	bool IsPaused();
+	void Reset();
+	void LoadRom(const std::string &filename);
+	void Quit();
 
 	void Break();
 	bool CanBreak();
@@ -32,12 +29,7 @@ class Emulator
 	OperatingMode GetStepType();
 
  private:
-	const uint64_t cyclesPerSecond = 5369318; // PPU Clock Speed
-
-	bool mIsPaused = false;
-	OperatingMode mOperatingMode = STEP_CYCLE;
-	OperatingMode mStepType = STEP_CYCLE;
-	bool mIsStepped = false;
+	EmulatorState mState;
 };
 
 #endif //NES_EMULATOR_SRC_EMULATOR_H_
