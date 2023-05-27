@@ -64,27 +64,48 @@ void UI::DrawMainMenuBar()
 				ImGui::EndMenu();
 			}
 			ImGui::Separator();
-			if (ImGui::MenuItem("Exit", "Cmd+Q")) {}
+			if (ImGui::MenuItem("Exit", "Cmd+Q")) {
+				mEmulator->Quit();
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("View"))
 		{
-			if (ImGui::MenuItem("CPU", NULL, true)) {}
-			if (ImGui::MenuItem("Memory", NULL, true)) {}
+			if (ImGui::MenuItem("CPU", NULL, shouldShowCpuWindow)) {
+				shouldShowCpuWindow = !shouldShowCpuWindow;
+			}
+			if (ImGui::MenuItem("Memory", NULL, shouldShowMemoryWindow)) {
+				shouldShowMemoryWindow = !shouldShowMemoryWindow;
+			}
+			if (ImGui::MenuItem("Pattern Table", NULL, shouldShowPatternTableWindow)) {
+				shouldShowPatternTableWindow = !shouldShowPatternTableWindow;
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Machine"))
 		{
-			if (ImGui::MenuItem("Pause", "Cmd+P", false, false)) {}
-			if (ImGui::MenuItem("Reset", "Cmd+R")) {}
+			if (ImGui::MenuItem(mEmulator->IsPaused() ? "Unpause" : "Pause", "Cmd+P", false, true)) {
+				mEmulator->IsPaused() ? mEmulator->Unpause() : mEmulator->Pause();
+			}
+			if (ImGui::MenuItem("Hard Reset", "Cmd+Shift+R")) {
+				mEmulator->HardReset();
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Debug"))
 		{
-			if (ImGui::MenuItem("Break", "Cmd+B", false, false)) {}  // Disabled item
-			if (ImGui::MenuItem("Set Breakpoint", "Cmd+Shift+B", false, false)) {}
-			if (ImGui::MenuItem("Step", "Spacebar")) {}
-			if (ImGui::MenuItem("Continue", 			NULL, false, false)) {}
+			if (ImGui::MenuItem("Break", "Cmd+B", false, mEmulator->CanBreak())) {
+				mEmulator->Break();
+			}
+			if (ImGui::MenuItem("Set Breakpoint", "Cmd+Shift+B", false, false)) {
+				// TODO
+			}
+			if (ImGui::MenuItem("Step", "Spacebar", false, mEmulator->CanStep())) {
+				mEmulator->Step();
+			}
+			if (ImGui::MenuItem("Continue", 			nullptr, false, mEmulator->CanContinue())) {
+				mEmulator->Continue();
+			}
 			ImGui::EndMenu();
 		}
 		ImGui::EndMainMenuBar();
@@ -93,16 +114,16 @@ void UI::DrawMainMenuBar()
 
 void UI::DrawCPUDebug()
 {
-	CPU::State state = mEmulator->mNes->cpu->GetState();
+	if (!shouldShowCpuWindow) return;
 
+	CPU::State state = mEmulator->mNes->cpu->GetState();
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
 	bool* p_open = nullptr;
-
 	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+
 	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 20),
 		ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
-
 	ImGui::Begin("CPU Debugger", p_open, window_flags);
 
 	// Left Column Sub-window
@@ -346,14 +367,15 @@ void UI::DrawCPUDebug()
 
 void UI::DrawMemoryDebug()
 {
+	if (!shouldShowMemoryWindow) return;
+
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
 	bool* p_open = nullptr;
-
 	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+
 	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 700, main_viewport->WorkPos.y + 20),
 		ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
-
 	ImGui::Begin("Memory", p_open, window_flags);
 
 	static int start_addr = 0;
@@ -406,14 +428,15 @@ void UI::DrawMemoryDebug()
 
 void UI::DrawPatternTableDebug()
 {
+	if (!shouldShowPatternTableWindow) return;
+
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
 	bool* p_open = nullptr;
-
 	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+
 	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 430),
 		ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
-
 	ImGui::Begin("Pattern Table", p_open, window_flags);
 
 	// Test texture

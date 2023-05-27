@@ -8,7 +8,6 @@ int main(int argc, char* argv[])
 	auto filename = argv[1];
 	auto emulator = std::make_shared<Emulator>(filename);
 
-	auto quit = false;
 	SDL_Event event;
 
 	SDL_Init(SDL_INIT_VIDEO);
@@ -19,7 +18,7 @@ int main(int argc, char* argv[])
 
 	auto ui = UI::Init(window, renderer, emulator);
 
-	while (!quit)
+	while (!emulator->ShouldQuit())
 	{
 		SDL_Delay(10);
 
@@ -30,7 +29,7 @@ int main(int argc, char* argv[])
 			switch (event.type)
 			{
 			case SDL_QUIT:
-				quit = true;
+				emulator->Quit();
 				break;
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_SPACE && emulator->CanStep())

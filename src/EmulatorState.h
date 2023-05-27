@@ -14,8 +14,8 @@ struct EmulatorState
 {
 	const uint64_t cyclesPerSecond = 5369318; // PPU Clock Speed
 	bool mIsPaused = false;
-	OperatingMode mOperatingMode = STEP_CYCLE;
-	OperatingMode mStepType = STEP_CYCLE;
+	OperatingMode mOperatingMode = STEP_CPU_INSTR;
+	OperatingMode mStepType = STEP_CPU_INSTR;
 	bool mIsStepped = false;
 };
 

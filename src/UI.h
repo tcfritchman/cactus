@@ -22,6 +22,9 @@ class UI
 	SDL_Renderer* mRenderer;
 	ImGuiIO& io;
 	std::shared_ptr<Emulator> mEmulator;
+	bool shouldShowCpuWindow = true;
+	bool shouldShowMemoryWindow = true;
+	bool shouldShowPatternTableWindow = true;
 
 	const ImVec4 CLEAR_COLOR = ImVec4(56.0f, 56.0f, 56.0f, 255.0f);
 
