@@ -51,3 +51,12 @@ std::vector<uint8_t> nes::read_file_bytes(const std::string& filename)
 	auto s = reinterpret_cast<uint8_t*>(result.data());
 	return std::vector<uint8_t>{ s, s + pos };
 }
+
+void nes::log(const char* format, ...)
+{
+	va_list argptr;
+	va_start(argptr, format);
+	vprintf(format, argptr);
+	putchar('\n');
+	va_end(argptr);
+}

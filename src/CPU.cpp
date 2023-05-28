@@ -60,12 +60,12 @@ size_t CPU::GetRemainingCycles() const
 CPU::CPU(std::shared_ptr<DataBus> mBus) : mBus(std::move(mBus))
 {
 	CPU::Reset();
-	std::printf("Created CPU\n");
+	nes::log("Created CPU");
 }
 
 CPU::~CPU()
 {
-	std::printf("Destroyed CPU\n");
+	nes::log("Destroyed CPU");
 }
 
 void CPU::Implicit()
@@ -76,6 +76,7 @@ void CPU::Implicit()
 void CPU::Accumulator()
 {
 	// Do nothing
+	nes::log("Accumulator addressing mode not yet implemented!");
 }
 
 void CPU::Immediate()
