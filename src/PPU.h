@@ -35,6 +35,11 @@ class PPU : public MemoryDevice
 	static const uint16_t PPUDATA = 0x2007;
 	static const uint16_t OAMDMA = 0x4014;
 
+	// Rendering
+	static const uint16_t RENDER_WIDTH = 256;
+	static const uint16_t RENDER_HEIGHT = 240;
+	static const uint16_t RENDER_PIXEL_COUNT = RENDER_HEIGHT * RENDER_WIDTH;
+
  private:
 	std::shared_ptr<VideoDataBus> mVideoDataBus;
 
@@ -61,6 +66,9 @@ class PPU : public MemoryDevice
 	int mPPUAddrWriteCount = 0;
 	uint16_t mOAMDMAAddress = 0x0000;
 	std::vector<uint8_t> mOAM = std::vector<uint8_t>(OAM_SIZE);
+
+	// 6-bit NES color values
+	std::vector<uint8_t> mRenderPixels = std::vector<uint8_t>(RENDER_PIXEL_COUNT);
 
 	uint8_t ReadPPUSTATUS();
 	uint8_t ReadOAMDATA();

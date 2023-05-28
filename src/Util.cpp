@@ -54,9 +54,9 @@ std::vector<uint8_t> nes::read_file_bytes(const std::string& filename)
 
 void nes::log(const char* format, ...)
 {
-	va_list argptr;
-	va_start(argptr, format);
-	vprintf(format, argptr);
+	va_list argp;
+	va_start(argp, format);
+	vprintf(format, argp);
 	putchar('\n');
-	va_end(argptr);
+	va_end(argp);
 }
