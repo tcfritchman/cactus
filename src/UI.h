@@ -34,6 +34,7 @@ class UI
 	void DrawMemoryDebug();
 	void DrawPatternTableDebug();
 	void DrawMainMenuBar();
+	void DrawPPURender();
 };
 
 #endif //NES_EMULATOR_SRC_UI_H_

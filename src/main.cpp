@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window* window = SDL_CreateWindow("Untitled NES Emulator",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 900, 600, 0);
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1200, 800, 0);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 	Uint64 ticksElapsed = SDL_GetTicks64();
 

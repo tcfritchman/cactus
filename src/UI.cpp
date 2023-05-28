@@ -32,6 +32,7 @@ void UI::Redraw()
 	ImGui::NewFrame();
 
 	// Redraw UI Components
+	DrawPPURender();
 	DrawMainMenuBar();
 	DrawCPUDebug();
 	DrawMemoryDebug();
@@ -444,6 +445,7 @@ void UI::DrawPatternTableDebug()
 	static SDL_Texture* texture_left = nullptr;
 	static SDL_Texture* texture_right = nullptr;
 
+	// TODO: Update
 	if (texture_left == nullptr)
 	{
 		uint32_t* pixel_buffer_left = new uint32_t[texture_width * texture_height] {};
@@ -487,6 +489,40 @@ void UI::DrawPatternTableDebug()
 	ImGui::Image((void*)(intptr_t)texture_left, ImVec2(texture_width, texture_height));
 	ImGui::SameLine();
 	ImGui::Image((void*)(intptr_t)texture_right, ImVec2(texture_width, texture_height));
+
+	ImGui::End();
+}
+
+void UI::DrawPPURender()
+{
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
+	bool* p_open = nullptr;
+	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 860, main_viewport->WorkPos.y + 80),
+		ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
+	ImGui::Begin("PPU Render", p_open, window_flags);
+
+	// Test texture
+	static int texture_width = 256, texture_height = 240;
+	static SDL_Texture* texture = nullptr;
+	static uint32_t* pixel_buffer; // TODO: Replace placeholder with rendered pixel data
+
+	if (texture == nullptr)
+	{
+		pixel_buffer = new uint32_t[texture_width * texture_height]{0};
+
+		texture = SDL_CreateTexture(mRenderer,
+			SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			texture_width,
+			texture_height);
+	}
+
+	SDL_UpdateTexture(texture, nullptr, pixel_buffer, texture_width * sizeof(uint32_t));
+
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(texture_width, texture_height));
 
 	ImGui::End();
 }
