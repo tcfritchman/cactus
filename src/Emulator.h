@@ -31,12 +31,15 @@ class Emulator
 
 	explicit Emulator(const std::string &filename);
 
+ private:
+	std::unique_ptr<INesRom> mRom;
+ public:
 	std::shared_ptr<NES> mNes;
-
  private:
 	std::unique_ptr<EmulatorState> mState;
-	std::unique_ptr<INesRom> mRom;
 	bool mShouldQuit = false;
+
+	std::unique_ptr<INesRom> CreateRomFromFile(const std::string &filename);
 };
 
 #endif //NES_EMULATOR_SRC_EMULATOR_H_

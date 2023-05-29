@@ -52,15 +52,13 @@ bool Emulator::IsPaused()
 
 void Emulator::HardReset()
 {
-	mNes = std::make_shared<NES>(*mRom);
-	mState = std::make_unique<EmulatorState>();
+	*mNes = NES {*mRom};
+	*mState = EmulatorState {};
 }
 
 void Emulator::LoadRom(const std::string& filename)
 {
-	auto rom_bytes = nes::read_file_bytes(filename);
-	mRom = std::make_unique<INesRom>(rom_bytes);
-	HardReset();
+	mRom = CreateRomFromFile(filename);
 }
 
 void Emulator::Quit()
@@ -126,7 +124,14 @@ OperatingMode Emulator::GetStepType()
 	return mState->mStepType;
 }
 
-Emulator::Emulator(const std::string& filename)
+Emulator::Emulator(const std::string& filename) :
+mRom {CreateRomFromFile(filename)},
+mNes {std::make_shared<NES>(*mRom)},
+mState {std::make_unique<EmulatorState>()}
+{}
+
+std::unique_ptr<INesRom> Emulator::CreateRomFromFile(const std::string& filename)
 {
-	LoadRom(filename);
+	auto rom_bytes = nes::read_file_bytes(filename);
+	return std::make_unique<INesRom>(rom_bytes);
 }

@@ -12,7 +12,7 @@ enum OperatingMode
 
 struct EmulatorState
 {
-	const uint64_t cyclesPerSecond = 5369318; // PPU Clock Speed
+	uint64_t cyclesPerSecond = 5369318; // PPU Clock Speed
 	bool mIsPaused = false;
 	OperatingMode mOperatingMode = STEP_CPU_INSTR;
 	OperatingMode mStepType = STEP_CPU_INSTR;
