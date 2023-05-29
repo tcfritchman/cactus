@@ -13,6 +13,10 @@ set(CMAKE_CXX_STANDARD 17)
 project(${PROJECT_NAME})
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(FILTER SOURCES EXCLUDE REGEX "src/test_main.cpp" )
+
+file(GLOB_RECURSE TEST_SOURCES "src/*.cpp")
+list(FILTER TEST_SOURCES EXCLUDE REGEX "src/main.cpp" )
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -21,3 +25,7 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+
+add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+target_compile_options(${PROJECT_NAME}_tests PRIVATE -Wall -Wextra)
+target_link_libraries(${PROJECT_NAME}_tests ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})

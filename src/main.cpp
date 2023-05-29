@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include "imgui/imgui_impl_sdl2.h"
-#include "UI.h"
-#include "Emulator.h"
+#include "nes/UI.h"
+#include "nes/Emulator.h"
 
 int main(int argc, char* argv[])
 {

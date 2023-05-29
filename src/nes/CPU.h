@@ -27,6 +27,9 @@ class CPU
 		bool I() const;
 		bool V() const;
 		bool N() const;
+
+		bool operator==(const State& rhs) const;
+		bool operator!=(const State& rhs) const;
 	};
 
 	void Cycle();

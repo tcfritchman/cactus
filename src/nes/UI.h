@@ -2,7 +2,7 @@
 #define NES_EMULATOR_SRC_UI_H_
 
 #include "NES.h"
-#include "imgui/imgui.h"
+#include "../imgui/imgui.h"
 #include "Emulator.h"
 #include <SDL.h>
 

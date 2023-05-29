@@ -662,3 +662,18 @@ bool CPU::State::N() const
 {
 	return nes::test_bit(P, 7);
 }
+
+bool CPU::State::operator==(const CPU::State& rhs) const
+{
+	return A == rhs.A &&
+		X == rhs.X &&
+		Y == rhs.Y &&
+		P == rhs.P &&
+		PC == rhs.PC &&
+		SP == rhs.SP;
+}
+
+bool CPU::State::operator!=(const CPU::State& rhs) const
+{
+	return !(rhs == *this);
+}
