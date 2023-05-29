@@ -49,11 +49,10 @@ bool Emulator::IsPaused()
 	return mState->mIsPaused;
 }
 
-
 void Emulator::HardReset()
 {
-	*mNes = NES {*mRom};
-	*mState = EmulatorState {};
+	*mNes = NES{ *mRom };
+	*mState = EmulatorState{};
 }
 
 void Emulator::LoadRom(const std::string& filename)
@@ -125,10 +124,11 @@ OperatingMode Emulator::GetStepType()
 }
 
 Emulator::Emulator(const std::string& filename) :
-mRom {CreateRomFromFile(filename)},
-mNes {std::make_shared<NES>(*mRom)},
-mState {std::make_unique<EmulatorState>()}
-{}
+	mRom{ CreateRomFromFile(filename) },
+	mNes{ std::make_shared<NES>(*mRom) },
+	mState{ std::make_unique<EmulatorState>() }
+{
+}
 
 std::unique_ptr<INesRom> Emulator::CreateRomFromFile(const std::string& filename)
 {

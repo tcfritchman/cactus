@@ -15,7 +15,7 @@ class Emulator
 	void Unpause();
 	bool IsPaused();
 	void HardReset();
-	void LoadRom(const std::string &filename);
+	void LoadRom(const std::string& filename);
 	void Quit();
 	bool ShouldQuit();
 
@@ -29,7 +29,7 @@ class Emulator
 	void SetStepTypeCpuInstr();
 	OperatingMode GetStepType();
 
-	explicit Emulator(const std::string &filename);
+	explicit Emulator(const std::string& filename);
 
  private:
 	std::unique_ptr<INesRom> mRom;
@@ -39,7 +39,7 @@ class Emulator
 	std::unique_ptr<EmulatorState> mState;
 	bool mShouldQuit = false;
 
-	std::unique_ptr<INesRom> CreateRomFromFile(const std::string &filename);
+	std::unique_ptr<INesRom> CreateRomFromFile(const std::string& filename);
 };
 
 #endif //NES_EMULATOR_SRC_EMULATOR_H_
