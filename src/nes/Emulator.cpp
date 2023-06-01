@@ -1,5 +1,7 @@
 #include "Emulator.h"
 #include "Util.h"
+#include <iostream>
+#include <iomanip>
 
 void Emulator::Tick(uint64_t deltaTime)
 {
