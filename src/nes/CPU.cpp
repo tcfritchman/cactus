@@ -31,8 +31,8 @@ void CPU::Reset()
 {
 	mInterruptDisableFlag = true; // TODO: Is this correct?
 	// TODO: Probably reset some registers as well?
-	uint16_t reset_vector = nes::address(mBus->read(0xFFFC), mBus->read(0xFFFD));
-	mRegPC = reset_vector;
+	uint16_t jump_addr = nes::address(mBus->read(0xFFFC), mBus->read(0xFFFD));
+	mRegPC = jump_addr;
 }
 
 void CPU::NMI()
@@ -55,6 +55,11 @@ Operation CPU::GetOperation(uint8_t op_code)
 size_t CPU::GetRemainingCycles() const
 {
 	return mCyclesRemaining;
+}
+
+bool CPU::IsLastCycle() const
+{
+	return mCyclesRemaining == 0;
 }
 
 std::vector<uint8_t> CPU::GetCurrentOpcodes() const
@@ -634,7 +639,8 @@ void CPU::BRK()
 	mRegSP--;
 	mBus->write(status, mRegSP);
 	mRegSP--;
-	mRegPC = mAddr;
+	uint16_t jump_addr = nes::address(mBus->read(0xFFFE), mBus->read(0xFFFF));
+	mRegPC = jump_addr;
 }
 
 void CPU::NOP()

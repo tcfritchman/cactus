@@ -40,6 +40,7 @@ class CPU
 	State GetState();
 	static Operation GetOperation(uint8_t op_code);
 	size_t GetRemainingCycles() const;
+	bool IsLastCycle() const;
 	std::vector<uint8_t> GetCurrentOpcodes() const;
 	void SetPC(uint16_t pc);
 

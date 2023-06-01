@@ -1,7 +1,5 @@
 #include "Emulator.h"
 #include "Util.h"
-#include <iostream>
-#include <iomanip>
 
 void Emulator::Tick(uint64_t deltaTime)
 {
@@ -22,8 +20,11 @@ void Emulator::Tick(uint64_t deltaTime)
 			do
 			{
 				mNes->Cycle();
-			} while (mNes->cpu->GetRemainingCycles() > 0);
+			} while (!mNes->cpu->IsLastCycle());
 			mState->mIsStepped = false;
+			// Dumb hack
+			mNes->Cycle();
+			mNes->Cycle();
 		}
 		break;
 	case REALTIME:
@@ -130,6 +131,7 @@ Emulator::Emulator(const std::string& filename) :
 	mNes{ std::make_shared<NES>(*mRom) },
 	mState{ std::make_unique<EmulatorState>() }
 {
+	mNes->cpu->SetPC(0xC000);
 }
 
 std::unique_ptr<INesRom> Emulator::CreateRomFromFile(const std::string& filename)
