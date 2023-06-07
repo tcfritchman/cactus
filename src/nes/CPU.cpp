@@ -7,13 +7,13 @@ void CPU::Cycle()
 	if (mCyclesRemaining == 0)
 	{
 		// Start executing the next instruction
-		// Not cycle-accurate - instruction is in a completed state after the first cycle
+		// Not cycle-accurate
 		auto current_instr = mBus->read(mRegPC);
 		Operation operation = OPERATIONS[current_instr];
 		mCyclesRemaining = operation.cycles;
 		ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
-		INSTRUCTION_MAP.find(operation.instruction)->second();
 		mRegPC += operation.bytes;
+		INSTRUCTION_MAP.find(operation.instruction)->second();
 	}
 	else
 	{
@@ -32,7 +32,7 @@ void CPU::Reset()
 	mInterruptDisableFlag = true; // TODO: Is this correct?
 	// TODO: Probably reset some registers as well?
 	uint16_t jump_addr = nes::address(mBus->read(0xFFFC), mBus->read(0xFFFD));
-	mRegPC = jump_addr;
+	SetPC(jump_addr);
 }
 
 void CPU::NMI()
@@ -77,6 +77,9 @@ std::vector<uint8_t> CPU::GetCurrentOpcodes() const
 void CPU::SetPC(uint16_t pc)
 {
 	mRegPC = pc;
+	auto current_instr = mBus->read(mRegPC);
+	Operation operation = OPERATIONS[current_instr];
+	mCyclesRemaining = operation.cycles;
 }
 
 CPU::CPU(std::shared_ptr<DataBus> mBus) : mBus(std::move(mBus))

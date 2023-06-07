@@ -26,12 +26,13 @@ std::string GetOpCodesStr(const std::vector<uint8_t>& op_codes)
 	return stream.str();
 }
 
-void PrintCpuState(NES& nes) {
+void PrintCpuState(NES& nes, int cycle_count)
+{
 	auto state = nes.cpu->GetState();
 	auto op = CPU::GetOperation(nes.dataBus->read(state.PC));
 	auto op_codes = nes.cpu->GetCurrentOpcodes();
 
-	std::printf("%04X  %s  %s %s A:%02X X:%02X Y:%02X P:%02X SP:%0X\n",
+	std::printf("%04X  %s  %s %s A:%02X X:%02X Y:%02X P:%02X SP:%0X CYC:%d\n",
 		state.PC,
 		GetOpCodesStr(op_codes).c_str(),
 		op.mnemonic.c_str(),
@@ -40,7 +41,8 @@ void PrintCpuState(NES& nes) {
 		state.X,
 		state.Y,
 		state.P,
-		state.SP);
+		state.SP,
+		cycle_count);
 }
 
 int main(int argc, char* argv[])
@@ -52,8 +54,14 @@ int main(int argc, char* argv[])
 	auto cpu = nes->cpu;
 	cpu->SetPC(0xC000);
 
+	int cycle_count = 0;
+
 	for (int i = 0; i < 100; i++) {
-		cpu->Cycle();
-		PrintCpuState(*nes);
+		do
+		{
+			cpu->Cycle();
+			cycle_count++;
+		} while (cpu->GetRemainingCycles() > 0);
+		PrintCpuState(*nes, cycle_count);
 	}
 }
