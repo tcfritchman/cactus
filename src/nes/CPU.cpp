@@ -241,7 +241,8 @@ inline uint8_t CPU::GetFlags() const
 		| (mZeroFlag << 1)
 		| (mInterruptDisableFlag << 2)
 		| (mOverflowFlag << 6)
-		| (mNegativeFlag << 7);
+		| (mNegativeFlag << 7)
+		| 0b00100000; // Always set bit 5 to 1
 }
 
 inline void CPU::SetFlags(uint8_t status)
