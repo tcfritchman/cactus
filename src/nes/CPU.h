@@ -61,6 +61,7 @@ class CPU
 	bool mInterruptDisableFlag = true;
 	bool mOverflowFlag = false;
 	bool mNegativeFlag = false;
+	bool mDecimalFlag = false;
 
 	// TODO
 	bool mIsInterrupted = false;

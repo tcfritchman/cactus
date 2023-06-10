@@ -240,6 +240,7 @@ inline uint8_t CPU::GetFlags() const
 	return (mCarryFlag)
 		| (mZeroFlag << 1)
 		| (mInterruptDisableFlag << 2)
+		| (mDecimalFlag << 3)
 		| (mOverflowFlag << 6)
 		| (mNegativeFlag << 7)
 		| 0b00100000; // Always set bit 5 to 1
@@ -250,6 +251,7 @@ inline void CPU::SetFlags(uint8_t status)
 	mCarryFlag = status & 0x1;
 	mZeroFlag = status & 0x2;
 	mInterruptDisableFlag = status & 0x4;
+	mDecimalFlag = status & 0x8;
 	mOverflowFlag = status & 0x40;
 	mNegativeFlag = status & 0x80;
 }
@@ -600,7 +602,7 @@ void CPU::CLC()
 
 void CPU::CLD()
 {
-	// No decimal mode
+	mDecimalFlag = false;
 }
 
 void CPU::CLI()
@@ -620,7 +622,7 @@ void CPU::SEC()
 
 void CPU::SED()
 {
-
+	mDecimalFlag = true;
 }
 
 void CPU::SEI()
