@@ -20,7 +20,7 @@ class CPU
 		uint8_t Y;
 		uint8_t P;
 		uint16_t PC;
-		uint16_t SP;
+		uint8_t SP;
 
 		bool C() const;
 		bool Z() const;
@@ -55,10 +55,10 @@ class CPU
 	uint8_t mRegX = 0;
 	uint8_t mRegY = 0;
 	uint16_t mRegPC = 0;
-	uint8_t mRegSP = 0xFF;
+	uint8_t mRegSP = 0xFD;
 	bool mCarryFlag = false;
 	bool mZeroFlag = false;
-	bool mInterruptDisableFlag = false;
+	bool mInterruptDisableFlag = true;
 	bool mOverflowFlag = false;
 	bool mNegativeFlag = false;
 

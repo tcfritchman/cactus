@@ -17,6 +17,12 @@ namespace nes
 
 	std::vector<uint8_t> read_file_bytes(const std::string& filename);
 
+	std::vector<std::string> read_file_lines(const std::string& filename);
+
+	std::string hex(uint8_t uint8);
+
+	std::string hex(uint16_t uint16);
+
 	void log(const char* format, ...);
 }
 

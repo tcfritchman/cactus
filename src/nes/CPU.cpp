@@ -136,7 +136,7 @@ void CPU::ZeroPageY()
 void CPU::Relative()
 {
 	auto offset = static_cast<int8_t>(mBus->read(mRegPC + 1)); // convert to signed value
-	mAddr = mRegPC + offset; // TODO: Does it wrap around?
+	mAddr = mRegPC + offset + 2; // Add offset plus current instruction TODO: Does it wrap around?
 	// TODO: hi and lo addr bytes?
 	mData = mBus->read(mAddr); // Not used
 }
@@ -705,7 +705,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0x20
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::JSR, 6},
+	{Operation::AddressingMode::ABSOLUTE, Operation::Instruction::JSR, 6},
 	{Operation::AddressingMode::INDEXED_INDIRECT, Operation::Instruction::AND, 6},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
@@ -867,7 +867,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0xB0
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BCS, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BCS, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::LDA, 5},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
