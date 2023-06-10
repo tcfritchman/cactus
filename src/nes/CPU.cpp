@@ -724,7 +724,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0x30
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BMI, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BMI, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::AND, 5},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
@@ -760,7 +760,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0x50
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BVC, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BVC, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::EOR, 5},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
@@ -796,7 +796,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0x70
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BVS, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BVS, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::ADC, 5},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
@@ -832,7 +832,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0x90
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BCC, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BCC, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::STA, 6},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
@@ -904,7 +904,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0xD0
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BNE, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BNE, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::CMP, 5},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
@@ -940,7 +940,7 @@ const std::vector<Operation> CPU::OPERATIONS = {
 	UNKNOWN_INSTR,
 
 	// 0xF0
-	{Operation::AddressingMode::IMPLICIT, Operation::Instruction::BEQ, 2},
+	{Operation::AddressingMode::RELATIVE, Operation::Instruction::BEQ, 2},
 	{Operation::AddressingMode::INDIRECT_INDEXED, Operation::Instruction::SBC, 5},
 	UNKNOWN_INSTR,
 	UNKNOWN_INSTR,
