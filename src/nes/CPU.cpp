@@ -509,7 +509,7 @@ void CPU::JMP()
 
 void CPU::JSR()
 {
-	uint16_t return_addr = mRegPC - 1; // Assuming PC is advanced before this function call!
+	uint16_t return_addr = mRegPC;
 	uint8_t return_addr_hi = nes::hi_byte(return_addr);
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
 	mBus->write(return_addr_hi, mRegSP);
@@ -533,7 +533,6 @@ void CPU::BCC()
 {
 	if (!mCarryFlag)
 	{
-		// Assuming PC is advanced before this function call!
 		mRegPC = mAddr;
 	}
 }
@@ -621,7 +620,7 @@ void CPU::SEC()
 
 void CPU::SED()
 {
-	// No decimal mode
+
 }
 
 void CPU::SEI()
