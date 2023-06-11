@@ -320,6 +320,7 @@ void CPU::PHA()
 void CPU::PHP()
 {
 	uint8_t status = GetFlags();
+	status |= 0b00010000; // Set status bit 4
 	mBus->write(status, mRegSP);
 	mRegSP--;
 }
@@ -500,8 +501,8 @@ void CPU::BIT()
 {
 	uint8_t result = mRegA & mData;
 	ComputeZ(result);
-	ComputeN(result);
-	mOverflowFlag = result & 0x40; // bit 6 is set
+	ComputeN(mData);
+	mOverflowFlag = mData & 0x40; // bit 6 is set
 }
 
 void CPU::JMP()
@@ -637,7 +638,6 @@ void CPU::BRK()
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
 	uint8_t status = GetFlags();
 	nes::set_bit(std::make_unique<uint8_t>(status), 4); // How to handle IRQ/NMI not setting this bit
-	nes::set_bit(std::make_unique<uint8_t>(status), 5);
 	mBus->write(return_addr_hi, mRegSP);
 	mRegSP--;
 	mBus->write(return_addr_lo, mRegSP);
