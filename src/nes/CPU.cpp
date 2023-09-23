@@ -220,7 +220,7 @@ void CPU::LDX()
 
 void CPU::LDY()
 {
-	mRegX = mData;
+	mRegY = mData;
 	ComputeZ(mRegY);
 	ComputeN(mRegY);
 }
