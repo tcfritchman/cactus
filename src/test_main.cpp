@@ -28,25 +28,6 @@ std::string GetOpCodesStr(const std::vector<uint8_t>& op_codes)
 	return stream.str();
 }
 
-void PrintCpuState(NES& nes, int cycle_count)
-{
-	auto state = nes.cpu->GetState();
-	auto op = CPU::GetOperation(nes.dataBus->read(state.PC));
-	auto op_codes = nes.cpu->GetCurrentOpcodes();
-
-	std::printf("%04X  %s  %s %s A:%02X X:%02X Y:%02X P:%02X SP:%0X CYC:%d\n",
-		state.PC,
-		GetOpCodesStr(op_codes).c_str(),
-		op.mnemonic.c_str(),
-		"",
-		state.A,
-		state.X,
-		state.Y,
-		state.P,
-		state.SP,
-		cycle_count);
-}
-
 class TestLog
 {
 	uint16_t pc;
@@ -81,13 +62,23 @@ class TestLog
 
 	friend std::ostream& operator<<(std::ostream& os, const TestLog& log)
 	{
-		os << "pc: " << nes::hex(log.pc)
-		   << " op_codes: " << GetOpCodesStr(log.op_codes)
-		   << " a: " << nes::hex(log.a)
-		   << " x: " << nes::hex(log.x)
-		   << " y: " << nes::hex(log.y)
-		   << " p: " << nes::hex(log.p)
-		   << " sp: " << nes::hex(log.sp);
+		os << "PC: " << nes::hex(log.pc)
+		   << " |"
+		   << " OPS: " << GetOpCodesStr(log.op_codes)
+		   << " |"
+		   << " A: " << nes::hex(log.a)
+		   << " X: " << nes::hex(log.x)
+		   << " Y: " << nes::hex(log.y)
+		   << " |"
+		   << " C: " << nes::test_bit(log.p, 0)
+		   << " Z: " << nes::test_bit(log.p, 1)
+		   << " I: " << nes::test_bit(log.p, 2)
+		   << " D: " << nes::test_bit(log.p, 3)
+		   << " B: " << nes::test_bit(log.p, 4)
+		   << " V: " << nes::test_bit(log.p, 6)
+		   << " N: " << nes::test_bit(log.p, 7)
+		   << " |"
+		   << " SP: " << nes::hex(log.sp);
 		return os;
 	}
 };
@@ -143,7 +134,7 @@ int main(int argc, char* argv[])
 	auto log_filename = argv[2]; // nestest.log
 	auto log_lines = nes::read_file_lines(log_filename);
 
-	int cycle_count = 0;
+	int cycle_count = 0; // TODO: Verify cycle count matches
 	int log_line_num = 1;
 	for (std::string log_line : log_lines) {
 		do
@@ -151,9 +142,9 @@ int main(int argc, char* argv[])
 			cpu->Cycle();
 			cycle_count++;
 		} while (cpu->GetRemainingCycles() > 0);
-		PrintCpuState(*nes, cycle_count);
 		auto expected = ParseLogLine(log_line);
 		auto actual = GetLogFromCpuState(*nes);
+		std::cout << actual << std::endl;
 		if (actual != expected)
 		{
 			std::cout << "Mismatch on line " << log_line_num << std::endl;
