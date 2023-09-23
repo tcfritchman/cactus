@@ -6,16 +6,16 @@
 #include "Emulator.h"
 #include <SDL.h>
 
-class UI
+class Frontend
 {
 
  public:
-	static UI Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator> emulator);
+	static Frontend Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator> emulator);
 
 	void Redraw();
 	static void HandleEvent(SDL_Event* event);
 
-	UI() = delete;
+	Frontend() = delete;
 
  private:
 	SDL_Window* mWindow;
@@ -28,7 +28,7 @@ class UI
 
 	const ImVec4 CLEAR_COLOR = ImVec4(56.0f, 56.0f, 56.0f, 255.0f);
 
-	UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator);
+	Frontend(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator);
 
 	void DrawCPUDebug();
 	void DrawMemoryDebug();

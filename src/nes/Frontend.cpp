@@ -1,4 +1,4 @@
-#include "UI.h"
+#include "Frontend.h"
 #include "Util.h"
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl2.h"
@@ -6,7 +6,7 @@
 #include <SDL.h>
 #include <utility>
 
-UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator> emulator)
+Frontend Frontend::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator> emulator)
 {
 	// Initialize Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -21,10 +21,10 @@ UI UI::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_ptr<Emulator
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer_Init(renderer);
 
-	return UI{ window, renderer, io, std::move(emulator) };
+	return Frontend{ window, renderer, io, std::move(emulator) };
 }
 
-void UI::Redraw()
+void Frontend::Redraw()
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplSDLRenderer_NewFrame();
@@ -50,7 +50,7 @@ void UI::Redraw()
 	ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
 }
 
-void UI::DrawMainMenuBar()
+void Frontend::DrawMainMenuBar()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -113,7 +113,7 @@ void UI::DrawMainMenuBar()
 	}
 }
 
-void UI::DrawCPUDebug()
+void Frontend::DrawCPUDebug()
 {
 	if (!shouldShowCpuWindow) return;
 
@@ -366,7 +366,7 @@ void UI::DrawCPUDebug()
 	ImGui::End();
 }
 
-void UI::DrawMemoryDebug()
+void Frontend::DrawMemoryDebug()
 {
 	if (!shouldShowMemoryWindow) return;
 
@@ -427,7 +427,7 @@ void UI::DrawMemoryDebug()
 	ImGui::End();
 }
 
-void UI::DrawPatternTableDebug()
+void Frontend::DrawPatternTableDebug()
 {
 	if (!shouldShowPatternTableWindow) return;
 
@@ -493,7 +493,7 @@ void UI::DrawPatternTableDebug()
 	ImGui::End();
 }
 
-void UI::DrawPPURender()
+void Frontend::DrawPPURender()
 {
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
 	bool* p_open = nullptr;
@@ -527,12 +527,12 @@ void UI::DrawPPURender()
 	ImGui::End();
 }
 
-UI::UI(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator)
+Frontend::Frontend(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator)
 	: mWindow(mWindow), mRenderer(mRenderer), io(io), mEmulator(std::move(emulator))
 {
 }
 
-void UI::HandleEvent(SDL_Event* event)
+void Frontend::HandleEvent(SDL_Event* event)
 {
 	ImGui_ImplSDL2_ProcessEvent(event);
 }

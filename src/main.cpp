@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include "imgui/imgui_impl_sdl2.h"
-#include "nes/UI.h"
+#include "nes/Frontend.h"
 #include "nes/Emulator.h"
 
 int main(int argc, char* argv[])
@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 	Uint64 ticksElapsed = SDL_GetTicks64();
 
-	auto ui = UI::Init(window, renderer, emulator);
+	auto frontend = Frontend::Init(window, renderer, emulator);
 
 	while (!emulator->ShouldQuit())
 	{
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 
 		while (SDL_PollEvent(&event))
 		{
-			UI::HandleEvent(&event);
+			Frontend::HandleEvent(&event);
 
 			switch (event.type)
 			{
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 
 		emulator->Tick(deltaTicks);
 
-		ui.Redraw();
+		frontend.Redraw();
 
 		SDL_RenderPresent(renderer);
 	}
