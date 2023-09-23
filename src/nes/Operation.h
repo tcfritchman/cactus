@@ -91,6 +91,7 @@ class Operation
 	Instruction instruction;
 	size_t cycles;
 	std::string mnemonic;
+	std::string addressing_mode_name;
 	size_t bytes;
 
 	Operation(AddressingMode addressingMode, Instruction instruction, size_t cycles);

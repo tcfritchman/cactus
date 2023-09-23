@@ -34,6 +34,12 @@ std::string GetInstructionStr(uint8_t op_code)
 	return op.mnemonic;
 }
 
+std::string GetAddrModeStr(uint8_t op_code)
+{
+	auto op = CPU::GetOperation(op_code);
+	return op.addressing_mode_name;
+}
+
 class TestLog
 {
 	uint16_t pc;
@@ -71,6 +77,8 @@ class TestLog
 		os << "PC: " << nes::hex(log.pc)
 		   << " |"
 		   << " INST: " << GetInstructionStr(log.op_codes[0])
+		   << " |"
+		   << " MODE: " << std::setw(16) << GetAddrModeStr(log.op_codes[0])
 		   << " |"
 		   << " OPS: " << GetOpCodesStr(log.op_codes)
 		   << " |"

@@ -27,6 +27,52 @@ Operation::Operation(Operation::AddressingMode addressingMode, Operation::Instru
 		break;
 	}
 
+	switch (addressing_mode)
+	{
+	case AddressingMode::UNKNOWN:
+		addressing_mode_name = "UNKNOWN";
+		break;
+	case AddressingMode::IMPLICIT:
+		addressing_mode_name = "IMPLICIT";
+		break;
+	case AddressingMode::ACCUMULATOR:
+		addressing_mode_name = "ACCUMULATOR";
+		break;
+	case AddressingMode::IMMEDIATE:
+		addressing_mode_name = "IMMEDIATE";
+		break;
+	case AddressingMode::ZERO_PAGE:
+		addressing_mode_name = "ZERO_PAGE";
+		break;
+	case AddressingMode::ZERO_PAGE_X:
+		addressing_mode_name = "ZERO_PAGE_X";
+		break;
+	case AddressingMode::ZERO_PAGE_Y:
+		addressing_mode_name = "ZERO_PAGE_Y";
+		break;
+	case AddressingMode::RELATIVE:
+		addressing_mode_name = "RELATIVE";
+		break;
+	case AddressingMode::INDEXED_INDIRECT:
+		addressing_mode_name = "INDEXED_INDIRECT";
+		break;
+	case AddressingMode::INDIRECT_INDEXED:
+		addressing_mode_name = "INDIRECT_INDEXED";
+		break;
+	case AddressingMode::ABSOLUTE:
+		addressing_mode_name = "ABSOLUTE";
+		break;
+	case AddressingMode::ABSOLUTE_X:
+		addressing_mode_name = "ABSOLUTE_X";
+		break;
+	case AddressingMode::ABSOLUTE_Y:
+		addressing_mode_name = "ABSOLUTE_Y";
+		break;
+	case AddressingMode::INDIRECT:
+		addressing_mode_name = "INDIRECT";
+		break;
+	}
+
 	switch (instruction)
 	{
 	case Instruction::UNKNOWN:
