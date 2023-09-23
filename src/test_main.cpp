@@ -69,8 +69,8 @@ class TestLog
 	friend std::ostream& operator<<(std::ostream& os, const TestLog& log)
 	{
 		os << "PC: " << nes::hex(log.pc)
-			<< " |"
-			<< " INST: " << GetInstructionStr(log.op_codes[0])
+		   << " |"
+		   << " INST: " << GetInstructionStr(log.op_codes[0])
 		   << " |"
 		   << " OPS: " << GetOpCodesStr(log.op_codes)
 		   << " |"
@@ -110,12 +110,14 @@ TestLog ParseLogLine(std::string line)
 	auto p = static_cast<uint8_t>(std::stoi(p_substr, nullptr, 16));
 	auto sp = static_cast<uint8_t>(std::stoi(sp_substr, nullptr, 16));
 
-	auto op_codes = std::vector<uint8_t> {};
+	auto op_codes = std::vector<uint8_t>{};
 	op_codes.push_back(static_cast<uint8_t>(std::stoi(op_code_1_substr, nullptr, 16)));
-	if (op_code_2_substr != "  ") {
+	if (op_code_2_substr != "  ")
+	{
 		op_codes.push_back(static_cast<uint8_t>(std::stoi(op_code_2_substr, nullptr, 16)));
 	}
-	if (op_code_3_substr != "  ") {
+	if (op_code_3_substr != "  ")
+	{
 		op_codes.push_back(static_cast<uint8_t>(std::stoi(op_code_3_substr, nullptr, 16)));
 	}
 
@@ -127,7 +129,7 @@ TestLog GetLogFromCpuState(const NES& nes)
 	auto state = nes.cpu->GetState();
 	auto op_codes = nes.cpu->GetCurrentOpcodes();
 
-	return TestLog { state.PC, op_codes, state.A, state.X, state.Y, state.P, state.SP };
+	return TestLog{ state.PC, op_codes, state.A, state.X, state.Y, state.P, state.SP };
 }
 
 int main(int argc, char* argv[])
@@ -144,7 +146,8 @@ int main(int argc, char* argv[])
 
 	int cycle_count = 0; // TODO: Verify cycle count matches
 	int log_line_num = 1;
-	for (std::string log_line : log_lines) {
+	for (const std::string& log_line : log_lines)
+	{
 		do
 		{
 			cpu->Cycle();
