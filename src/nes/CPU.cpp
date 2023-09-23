@@ -359,8 +359,8 @@ void CPU::SBC()
 {
 	uint8_t result = mRegA - mData - (!mCarryFlag);
 
-	bool isCarry = result > mRegA;
-	bool isOverflow = ((mRegA ^ result) & 0x80) && ((mData ^ result) & 0x80);
+	bool isCarry = result < mRegA; // Carry flag is inverted
+	bool isOverflow = ((result ^ mRegA) & 0x80) && ((mData ^ mRegA) & 0x80);
 
 	mRegA = result;
 
