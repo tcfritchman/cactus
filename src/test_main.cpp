@@ -28,6 +28,12 @@ std::string GetOpCodesStr(const std::vector<uint8_t>& op_codes)
 	return stream.str();
 }
 
+std::string GetInstructionStr(uint8_t op_code)
+{
+	auto op = CPU::GetOperation(op_code);
+	return op.mnemonic;
+}
+
 class TestLog
 {
 	uint16_t pc;
@@ -63,6 +69,8 @@ class TestLog
 	friend std::ostream& operator<<(std::ostream& os, const TestLog& log)
 	{
 		os << "PC: " << nes::hex(log.pc)
+			<< " |"
+			<< " INST: " << GetInstructionStr(log.op_codes[0])
 		   << " |"
 		   << " OPS: " << GetOpCodesStr(log.op_codes)
 		   << " |"

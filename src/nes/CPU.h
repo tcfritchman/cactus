@@ -176,7 +176,6 @@ class CPU
 
 	inline void ComputeZ(uint8_t value);
 	inline void ComputeN(uint8_t value);
-	inline bool ComputeCarry(uint8_t x, uint8_t y, bool carry);
 	inline uint8_t GetFlags() const;
 	inline void SetFlags(uint8_t status);
 
