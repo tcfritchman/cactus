@@ -235,6 +235,12 @@ inline void CPU::ComputeN(uint8_t value)
 	mNegativeFlag = value & 0x80;
 }
 
+inline bool CPU::ComputeCarry(uint8_t x, uint8_t y, bool carry)
+{
+	return (!carry && 0xFF - y < x)
+	|| (carry && (0xFF - y == 0 || 0xFF - y - 1 < x));
+}
+
 inline uint8_t CPU::GetFlags() const
 {
 	return (mCarryFlag)
@@ -342,8 +348,9 @@ void CPU::PLP()
 
 void CPU::ADC()
 {
-	bool isCarry = static_cast<uint16_t>(mRegA) + mData + mCarryFlag > 0xFF;
-	bool isOverflow = false; // TODO
+	bool isCarry = ComputeCarry(mRegA, mData, mCarryFlag);
+//	bool isCarry = static_cast<uint16_t>(mRegA) + mData + mCarryFlag > 0xFF;
+	bool isOverflow = ComputeCarry(mRegA - 128, mData, mCarryFlag);
 
 	mRegA += mData;
 	mRegA += mCarryFlag;
