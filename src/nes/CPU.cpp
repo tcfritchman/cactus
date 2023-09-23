@@ -357,11 +357,12 @@ void CPU::ADC()
 
 void CPU::SBC()
 {
-	bool isCarry = static_cast<uint16_t>(mRegA) - mData - (1 - mCarryFlag) > 0xFF;
-	bool isOverflow = false; // TODO
+	uint8_t result = mRegA - mData - (!mCarryFlag);
 
-	mRegA -= mData;
-	mRegA -= 1 - mCarryFlag;
+	bool isCarry = result > mRegA;
+	bool isOverflow = ((mRegA ^ result) & 0x80) && ((mData ^ result) & 0x80);
+
+	mRegA = result;
 
 	mCarryFlag = isCarry;
 	mOverflowFlag = isOverflow;
