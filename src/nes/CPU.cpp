@@ -123,25 +123,19 @@ void CPU::Immediate()
 
 void CPU::ZeroPage()
 {
-	mAddrHi = 0;
-	mAddrLo = mBus->read(mRegPC + 1);
-	mAddr = mAddrLo;
+	mAddr = mBus->read(mRegPC + 1);
 	mData = mBus->read(mAddr);
 }
 
 void CPU::ZeroPageX()
 {
-	mAddrHi = 0;
-	mAddrLo = mBus->read(mRegPC + 1) + mRegX;
-	mAddr = mAddrLo;
+	mAddr = mBus->read(mRegPC + 1) + mRegX;
 	mData = mBus->read(mAddr);
 }
 
 void CPU::ZeroPageY()
 {
-	mAddrHi = 0;
-	mAddrLo = mBus->read(mRegPC + 1) + mRegY;
-	mAddr = mAddrLo;
+	mAddr = mBus->read(mRegPC + 1) + mRegY;
 	mData = mBus->read(mAddr);
 }
 
@@ -149,31 +143,30 @@ void CPU::Relative()
 {
 	auto offset = static_cast<int8_t>(mBus->read(mRegPC + 1)); // convert to signed value
 	mAddr = mRegPC + offset + 2; // Add offset plus current instruction TODO: Does it wrap around?
-	// TODO: hi and lo addr bytes?
 	mData = mBus->read(mAddr); // Not used
 }
 
 void CPU::Absolute()
 {
-	mAddrLo = mBus->read(mRegPC + 1);
-	mAddrHi = mBus->read(mRegPC + 2);
-	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
+	auto addrLo = mBus->read(mRegPC + 1);
+	auto addrHi = mBus->read(mRegPC + 2);
+	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
 	mData = mBus->read(mAddr);
 }
 
 void CPU::AbsoluteX()
 {
-	mAddrLo = mBus->read(mRegPC + 1);
-	mAddrHi = mBus->read(mRegPC + 2);
-	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo + mRegX;
+	auto addrLo = mBus->read(mRegPC + 1);
+	auto addrHi = mBus->read(mRegPC + 2);
+	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo + mRegX;
 	mData = mBus->read(mAddr);
 }
 
 void CPU::AbsoluteY()
 {
-	mAddrLo = mBus->read(mRegPC + 1);
-	mAddrHi = mBus->read(mRegPC + 2);
-	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo + mRegY;
+	auto addrLo = mBus->read(mRegPC + 1);
+	auto addrHi = mBus->read(mRegPC + 2);
+	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo + mRegY;
 	mData = mBus->read(mAddr);
 }
 
@@ -182,9 +175,9 @@ void CPU::Indirect()
 	auto indirect_lo = mBus->read(mRegPC + 1);
 	auto indirect_hi = mBus->read(mRegPC + 2);
 	auto indirect_addr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo;
-	mAddrLo = mBus->read(indirect_addr);
-	mAddrHi = mBus->read(indirect_addr + 1);
-	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
+	auto addrLo = mBus->read(indirect_addr);
+	auto addrHi = mBus->read(indirect_addr + 1);
+	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
 	mData = mBus->read(mAddr); // Not used
 }
 
@@ -192,9 +185,9 @@ void CPU::IndexedIndirect()
 {
 	auto indirect_zero_page = mBus->read(mRegPC + 1);
 	uint8_t indirect_addr = indirect_zero_page + mRegX;
-	mAddrLo = mBus->read(indirect_addr);
-	mAddrHi = mBus->read(indirect_addr + 1);
-	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
+	auto addrLo = mBus->read(indirect_addr);
+	auto addrHi = mBus->read(indirect_addr + 1);
+	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
 	mData = mBus->read(mAddr);
 }
 
@@ -204,9 +197,9 @@ void CPU::IndirectIndexed()
 	auto indirect_lo = mBus->read(indirect_zero_page + 1);
 	auto indirect_hi = mBus->read(indirect_zero_page + 2);
 	auto indirect_addr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo + mRegY;
-	mAddrLo = mBus->read(indirect_addr);
-	mAddrHi = mBus->read(indirect_addr + 1);
-	mAddr = ((static_cast<uint16_t>(mAddrHi)) << 8) + mAddrLo;
+	auto addrLo = mBus->read(indirect_addr);
+	auto addrHi = mBus->read(indirect_addr + 1);
+	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
 	mData = mBus->read(mAddr);
 }
 

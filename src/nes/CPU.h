@@ -68,8 +68,6 @@ class CPU
 	uint16_t mInterruptAddress = 0;
 
 	size_t mCyclesRemaining = 0;
-	uint8_t mAddrHi = 0; // TODO: Remove
-	uint8_t mAddrLo = 0; // TODO: Remove
 	uint16_t mAddr = 0;
 	uint8_t mData = 0;
 
