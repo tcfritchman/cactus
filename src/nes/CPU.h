@@ -179,6 +179,9 @@ class CPU
 	inline uint8_t GetFlags() const;
 	inline void SetFlags(uint8_t status);
 
+	void PerformAddressingMode(const Operation& operation);
+	void PerformInstruction(const Operation& operation);
+
 	static uint16_t const STACK_ADDR = 0x100;
 
 	static inline Operation const UNKNOWN_INSTR = { Operation::AddressingMode::UNKNOWN, Operation::Instruction::UNKNOWN, 1 };

@@ -11,19 +11,28 @@ void CPU::Cycle()
 		auto current_instr = mBus->read(mRegPC);
 		Operation operation = OPERATIONS[current_instr];
 		mCyclesRemaining = operation.cycles;
-		ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
+		PerformAddressingMode(operation);
 		mRegPC += operation.bytes;
-		if (operation.addressing_mode == Operation::AddressingMode::ACCUMULATOR) {
-			ACCUMULATOR_INSTRUCTION_MAP.find(operation.instruction)->second();
-		} else {
-			INSTRUCTION_MAP.find(operation.instruction)->second();
-		}
+		PerformInstruction(operation);
 	}
 	else
 	{
 		mCyclesRemaining--;
 		// TODO: Add additional cycles in conditional branch instructions
 	}
+}
+
+void CPU::PerformAddressingMode(const Operation& operation)
+{
+	ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
+}
+
+void CPU::PerformInstruction(const Operation& operation)
+{
+	auto instruction_map =
+		operation.addressing_mode == Operation::AddressingMode::ACCUMULATOR ? ACCUMULATOR_INSTRUCTION_MAP
+																			: INSTRUCTION_MAP;
+	instruction_map.find(operation.instruction)->second();
 }
 
 void CPU::IRQ()
