@@ -68,8 +68,8 @@ class CPU
 	uint16_t mInterruptAddress = 0;
 
 	size_t mCyclesRemaining = 0;
-	uint8_t mAddrHi = 0;
-	uint8_t mAddrLo = 0;
+	uint8_t mAddrHi = 0; // TODO: Remove
+	uint8_t mAddrLo = 0; // TODO: Remove
 	uint16_t mAddr = 0;
 	uint8_t mData = 0;
 
@@ -549,6 +549,16 @@ class CPU
 		{ Operation::Instruction::BRK, [this] { BRK(); } },
 		{ Operation::Instruction::NOP, [this] { NOP(); } },
 		{ Operation::Instruction::RTI, [this] { RTI(); } }
+	};
+
+	std::unordered_map<Operation::Instruction, std::function<void()>> const ACCUMULATOR_INSTRUCTION_MAP = {
+		{ Operation::Instruction::UNKNOWN, [this] { OOPS(); } },
+		{ Operation::Instruction::INC, [this] { INC_A(); } },
+		{ Operation::Instruction::DEC, [this] { DEC_A(); } },
+		{ Operation::Instruction::ASL, [this] { ASL_A(); } },
+		{ Operation::Instruction::LSR, [this] { LSR_A(); } },
+		{ Operation::Instruction::ROL, [this] { ROL_A(); } },
+		{ Operation::Instruction::ROR, [this] { ROR_A(); } },
 	};
 };
 

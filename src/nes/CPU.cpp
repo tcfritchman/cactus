@@ -13,7 +13,11 @@ void CPU::Cycle()
 		mCyclesRemaining = operation.cycles;
 		ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
 		mRegPC += operation.bytes;
-		INSTRUCTION_MAP.find(operation.instruction)->second();
+		if (operation.addressing_mode == Operation::AddressingMode::ACCUMULATOR) {
+			ACCUMULATOR_INSTRUCTION_MAP.find(operation.instruction)->second();
+		} else {
+			INSTRUCTION_MAP.find(operation.instruction)->second();
+		}
 	}
 	else
 	{
@@ -100,8 +104,7 @@ void CPU::Implicit()
 
 void CPU::Accumulator()
 {
-	// Do nothing
-	nes::log("Accumulator addressing mode not yet implemented!");
+	mData = mRegA;
 }
 
 void CPU::Immediate()
@@ -402,6 +405,14 @@ void CPU::INC()
 	ComputeN(result);
 }
 
+void CPU::INC_A()
+{
+	uint8_t result = mData + 1;
+	mRegA = result;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
 void CPU::INX()
 {
 	mRegX++;
@@ -420,6 +431,14 @@ void CPU::DEC()
 {
 	uint8_t result = mData - 1;
 	mBus->write(result, mAddr);
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::DEC_A()
+{
+	uint8_t result = mData - 1;
+	mRegA = result;
 	ComputeZ(result);
 	ComputeN(result);
 }
@@ -448,11 +467,31 @@ void CPU::ASL()
 	ComputeN(result);
 }
 
+void CPU::ASL_A()
+{
+	bool isCarry = mData & 0x80;
+	uint8_t result = mData << 1;
+	mRegA = result;
+	mCarryFlag = isCarry;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
 void CPU::LSR()
 {
 	bool isCarry = mData & 0x1;
 	uint8_t result = mData >> 1;
 	mBus->write(result, mAddr);
+	mCarryFlag = isCarry;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::LSR_A()
+{
+	bool isCarry = mData & 0x1;
+	uint8_t result = mData >> 1;
+	mRegA = result;
 	mCarryFlag = isCarry;
 	ComputeZ(result);
 	ComputeN(result);
@@ -468,11 +507,31 @@ void CPU::ROL()
 	ComputeN(result);
 }
 
+void CPU::ROL_A()
+{
+	uint8_t hiBit = mData & 0x80;
+	uint8_t result = (mData << 1) | (hiBit >> 7);
+	mRegA = result;
+	mCarryFlag = hiBit != 0;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
 void CPU::ROR()
 {
 	uint8_t loBit = mData & 0x1;
 	uint8_t result = (mData >> 1) | (loBit << 7);
 	mBus->write(result, mAddr);
+	mCarryFlag = loBit != 0;
+	ComputeZ(result);
+	ComputeN(result);
+}
+
+void CPU::ROR_A()
+{
+	uint8_t loBit = mData & 0x1;
+	uint8_t result = (mData >> 1) | (loBit << 7);
+	mRegA = result;
 	mCarryFlag = loBit != 0;
 	ComputeZ(result);
 	ComputeN(result);
