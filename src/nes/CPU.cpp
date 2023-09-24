@@ -514,7 +514,7 @@ void CPU::JMP()
 
 void CPU::JSR()
 {
-	uint16_t return_addr = mRegPC;
+	uint16_t return_addr = mRegPC - 1;
 	uint8_t return_addr_hi = nes::hi_byte(return_addr);
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
 	mBus->write(return_addr_hi, mRegSP + STACK_ADDR);
@@ -531,7 +531,7 @@ void CPU::RTS()
 	mRegSP++;
 	uint8_t return_addr_hi = mBus->read(mRegSP + STACK_ADDR);
 	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
-	mRegPC = return_addr;
+	mRegPC = return_addr + 1;
 }
 
 void CPU::BCC()
