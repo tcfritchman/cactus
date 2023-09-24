@@ -509,7 +509,7 @@ void CPU::LSR_A()
 void CPU::ROL()
 {
 	uint8_t hiBit = mData & 0x80;
-	uint8_t result = (mData << 1) | (hiBit >> 7);
+	uint8_t result = (mData << 1) | mCarryFlag;
 	mBus->write(result, mAddr);
 	mCarryFlag = hiBit != 0;
 	ComputeZ(result);
@@ -519,7 +519,7 @@ void CPU::ROL()
 void CPU::ROL_A()
 {
 	uint8_t hiBit = mData & 0x80;
-	uint8_t result = (mData << 1) | (hiBit >> 7);
+	uint8_t result = (mData << 1) | mCarryFlag;
 	mRegA = result;
 	mCarryFlag = hiBit != 0;
 	ComputeZ(result);
@@ -529,7 +529,7 @@ void CPU::ROL_A()
 void CPU::ROR()
 {
 	uint8_t loBit = mData & 0x1;
-	uint8_t result = (mData >> 1) | (loBit << 7);
+	uint8_t result = (mData >> 1) | (mCarryFlag << 7);
 	mBus->write(result, mAddr);
 	mCarryFlag = loBit != 0;
 	ComputeZ(result);
@@ -539,7 +539,7 @@ void CPU::ROR()
 void CPU::ROR_A()
 {
 	uint8_t loBit = mData & 0x1;
-	uint8_t result = (mData >> 1) | (loBit << 7);
+	uint8_t result = (mData >> 1) | (mCarryFlag << 7);
 	mRegA = result;
 	mCarryFlag = loBit != 0;
 	ComputeZ(result);
