@@ -313,7 +313,7 @@ void CPU::TXS()
 
 void CPU::PHA()
 {
-	mBus->write(mRegA, mRegSP);
+	mBus->write(mRegA, mRegSP + STACK_ADDR);
 	mRegSP--;
 }
 
@@ -321,14 +321,14 @@ void CPU::PHP()
 {
 	uint8_t status = GetFlags();
 	status |= 0b00010000; // Set status bit 4
-	mBus->write(status, mRegSP);
+	mBus->write(status, mRegSP + STACK_ADDR);
 	mRegSP--;
 }
 
 void CPU::PLA()
 {
 	mRegSP++;
-	mRegA = mBus->read(mRegSP);
+	mRegA = mBus->read(mRegSP + STACK_ADDR);
 	ComputeZ(mRegA);
 	ComputeN(mRegA);
 }
@@ -336,7 +336,7 @@ void CPU::PLA()
 void CPU::PLP()
 {
 	mRegSP++;
-	uint8_t status = mBus->read(mRegSP);
+	uint8_t status = mBus->read(mRegSP + STACK_ADDR);
 	SetFlags(status);
 }
 
@@ -517,9 +517,9 @@ void CPU::JSR()
 	uint16_t return_addr = mRegPC;
 	uint8_t return_addr_hi = nes::hi_byte(return_addr);
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
-	mBus->write(return_addr_hi, mRegSP);
+	mBus->write(return_addr_hi, mRegSP + STACK_ADDR);
 	mRegSP--;
-	mBus->write(return_addr_lo, mRegSP);
+	mBus->write(return_addr_lo, mRegSP + STACK_ADDR);
 	mRegSP--;
 	mRegPC = mAddr;
 }
@@ -527,9 +527,9 @@ void CPU::JSR()
 void CPU::RTS()
 {
 	mRegSP++;
-	uint8_t return_addr_lo = mBus->read(mRegSP);
+	uint8_t return_addr_lo = mBus->read(mRegSP + STACK_ADDR);
 	mRegSP++;
-	uint8_t return_addr_hi = mBus->read(mRegSP);
+	uint8_t return_addr_hi = mBus->read(mRegSP + STACK_ADDR);
 	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
 	mRegPC = return_addr;
 }
@@ -640,11 +640,11 @@ void CPU::BRK()
 	uint8_t return_addr_lo = nes::lo_byte(return_addr);
 	uint8_t status = GetFlags();
 	nes::set_bit(std::make_unique<uint8_t>(status), 4); // How to handle IRQ/NMI not setting this bit
-	mBus->write(return_addr_hi, mRegSP);
+	mBus->write(return_addr_hi, mRegSP + STACK_ADDR);
 	mRegSP--;
-	mBus->write(return_addr_lo, mRegSP);
+	mBus->write(return_addr_lo, mRegSP + STACK_ADDR);
 	mRegSP--;
-	mBus->write(status, mRegSP);
+	mBus->write(status, mRegSP + STACK_ADDR);
 	mRegSP--;
 	uint16_t jump_addr = nes::address(mBus->read(0xFFFE), mBus->read(0xFFFF));
 	mRegPC = jump_addr;
@@ -658,11 +658,11 @@ void CPU::NOP()
 void CPU::RTI()
 {
 	mRegSP++;
-	uint8_t status = mBus->read(mRegSP);
+	uint8_t status = mBus->read(mRegSP + STACK_ADDR);
 	mRegSP++;
-	uint8_t return_addr_lo = mBus->read(mRegSP);
+	uint8_t return_addr_lo = mBus->read(mRegSP + STACK_ADDR);
 	mRegSP++;
-	uint8_t return_addr_hi = mBus->read(mRegSP);
+	uint8_t return_addr_hi = mBus->read(mRegSP + STACK_ADDR);
 	uint16_t return_addr = nes::address(return_addr_lo, return_addr_hi);
 	mRegPC = return_addr;
 	SetFlags(status);
