@@ -129,13 +129,13 @@ void CPU::ZeroPage()
 
 void CPU::ZeroPageX()
 {
-	mAddr = mBus->read(mRegPC + 1) + mRegX;
+	mAddr = (mBus->read(mRegPC + 1) + mRegX) % 0x100;
 	mData = mBus->read(mAddr);
 }
 
 void CPU::ZeroPageY()
 {
-	mAddr = mBus->read(mRegPC + 1) + mRegY;
+	mAddr = (mBus->read(mRegPC + 1) + mRegY) % 0x100;
 	mData = mBus->read(mAddr);
 }
 
