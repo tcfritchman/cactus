@@ -430,7 +430,7 @@ class CPU
 		{Operation::AddressingMode::ZERO_PAGE_X, Operation::Instruction::DEC, 6},
 		UNKNOWN_INSTR,
 		{Operation::AddressingMode::IMPLICIT, Operation::Instruction::CLD, 2},
-		{Operation::AddressingMode::ABSOLUTE_X, Operation::Instruction::CMP, 4},
+		{Operation::AddressingMode::ABSOLUTE_Y, Operation::Instruction::CMP, 4},
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,
 		UNKNOWN_INSTR,

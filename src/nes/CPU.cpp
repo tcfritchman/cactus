@@ -142,8 +142,8 @@ void CPU::ZeroPageY()
 void CPU::Relative()
 {
 	auto offset = static_cast<int8_t>(mBus->read(mRegPC + 1)); // convert to signed value
-	mAddr = mRegPC + offset + 2; // Add offset plus current instruction TODO: Does it wrap around?
-	mData = mBus->read(mAddr); // Not used
+	mAddr = mRegPC + offset + 2; // Add offset plus current instruction
+	mData = mBus->read(mAddr); // Not used by branch instructions
 }
 
 void CPU::Absolute()
