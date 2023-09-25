@@ -307,7 +307,7 @@ class CPU
 		{Operation::AddressingMode::IMMEDIATE, Operation::Instruction::ADC, 2},
 		{Operation::AddressingMode::ACCUMULATOR, Operation::Instruction::ROR, 2},
 		UNKNOWN_INSTR,
-		{Operation::AddressingMode::ABSOLUTE, Operation::Instruction::JMP, 5},
+		{Operation::AddressingMode::INDIRECT, Operation::Instruction::JMP, 5},
 		{Operation::AddressingMode::ABSOLUTE, Operation::Instruction::ADC, 4},
 		{Operation::AddressingMode::ABSOLUTE, Operation::Instruction::ROR, 6},
 		UNKNOWN_INSTR,

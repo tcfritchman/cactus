@@ -176,9 +176,12 @@ void CPU::Indirect()
 	auto indirect_hi = mBus->read(mRegPC + 2);
 	auto indirect_addr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo;
 	auto addrLo = mBus->read(indirect_addr);
-	auto addrHi = mBus->read(indirect_addr + 1);
+	// Handle 6502 bug when indirect vector is on a page boundary
+	uint8_t addrHi = indirect_lo == 0xFF ?
+					 mBus->read(indirect_addr - 0xFF) :
+					 mBus->read(indirect_addr + 1);
 	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
-	mData = mBus->read(mAddr); // Not used
+	mData = mBus->read(mAddr); // Not used by JMP
 }
 
 void CPU::IndexedIndirect()
