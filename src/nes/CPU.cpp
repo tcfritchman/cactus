@@ -729,6 +729,46 @@ void CPU::RTI()
 	SetFlags(status);
 }
 
+void CPU::LAX()
+{
+
+}
+
+void CPU::SAX()
+{
+
+}
+
+void CPU::DCP()
+{
+
+}
+
+void CPU::ISB()
+{
+
+}
+
+void CPU::SLO()
+{
+
+}
+
+void CPU::RLA()
+{
+
+}
+
+void CPU::SRE()
+{
+
+}
+
+void CPU::RRA()
+{
+
+}
+
 bool CPU::State::C() const
 {
 	return nes::test_bit(P, 0);

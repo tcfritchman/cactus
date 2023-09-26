@@ -84,7 +84,16 @@ class Operation
 		SEI,
 		BRK,
 		NOP,
-		RTI
+		RTI,
+		// "Illegal" op-codes
+		LAX,
+		SAX,
+		DCP,
+		ISB,
+		SLO,
+		RLA,
+		SRE,
+		RRA
 	};
 
 	AddressingMode addressing_mode;

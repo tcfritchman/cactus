@@ -246,5 +246,29 @@ Operation::Operation(Operation::AddressingMode addressingMode, Operation::Instru
 	case Instruction::RTI:
 		mnemonic = "RTI";
 		break;
+	case Instruction::LAX:
+		mnemonic = "LAX";
+		break;
+	case Instruction::SAX:
+		mnemonic = "SAX";
+		break;
+	case Instruction::DCP:
+		mnemonic = "DCP";
+		break;
+	case Instruction::ISB:
+		mnemonic = "ISB";
+		break;
+	case Instruction::SLO:
+		mnemonic = "SLO";
+		break;
+	case Instruction::RLA:
+		mnemonic = "RLA";
+		break;
+	case Instruction::SRE:
+		mnemonic = "SRE";
+		break;
+	case Instruction::RRA:
+		mnemonic = "RRA";
+		break;
 	}
 }
