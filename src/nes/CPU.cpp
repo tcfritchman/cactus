@@ -731,12 +731,16 @@ void CPU::RTI()
 
 void CPU::LAX()
 {
-
+	mRegA = mData;
+	mRegX = mData;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
 }
 
 void CPU::SAX()
 {
-
+//	uint8_t result = mRegA & mData;
+//	mBus->write(result, mAddr);
 }
 
 void CPU::DCP()
