@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 	auto log_filename = test_res_dir + "/nestest.log";
 	auto log_lines = nes::read_file_lines(log_filename);
 
-	int cycle_count = 0;
+	int cycle_count = 4; // Not sure why this offset exists
 	int log_line_num = 1;
 	for (const std::string& log_line : log_lines)
 	{

@@ -10,7 +10,7 @@ void CPU::Cycle()
 		// Not cycle-accurate
 		auto current_instr = mBus->read(mRegPC);
 		Operation operation = OPERATIONS[current_instr];
-		mCyclesRemaining = operation.cycles;
+		mCyclesRemaining = operation.cycles - 1;
 		PerformAddressingMode(operation);
 		mRegPC += operation.bytes;
 		PerformInstruction(operation);
@@ -593,6 +593,7 @@ void CPU::BCC()
 {
 	if (!mCarryFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -601,6 +602,7 @@ void CPU::BCS()
 {
 	if (mCarryFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -609,6 +611,7 @@ void CPU::BEQ()
 {
 	if (mZeroFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -617,6 +620,7 @@ void CPU::BMI()
 {
 	if (mNegativeFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -625,6 +629,7 @@ void CPU::BNE()
 {
 	if (!mZeroFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -633,6 +638,7 @@ void CPU::BPL()
 {
 	if (!mNegativeFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -641,6 +647,7 @@ void CPU::BVC()
 {
 	if (!mOverflowFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
@@ -649,6 +656,7 @@ void CPU::BVS()
 {
 	if (mOverflowFlag)
 	{
+		mCyclesRemaining += (mAddr ^ mRegPC) & 0xFF00 ? 2 : 1;
 		mRegPC = mAddr;
 	}
 }
