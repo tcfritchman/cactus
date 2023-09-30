@@ -774,7 +774,13 @@ void CPU::SLO()
 
 void CPU::RLA()
 {
-
+	uint8_t hiBit = mData & 0x80;
+	uint8_t rol_result = (mData << 1) | mCarryFlag;
+	mBus->write(rol_result, mAddr);
+	mCarryFlag = hiBit != 0;
+	mRegA &= rol_result;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
 }
 
 void CPU::SRE()
