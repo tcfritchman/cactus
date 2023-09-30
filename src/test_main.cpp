@@ -142,14 +142,16 @@ TestLog GetLogFromCpuState(const NES& nes)
 
 int main(int argc, char* argv[])
 {
-	auto program_filename = argv[1]; // nestest.nes
+	std::string test_res_dir = argv[1];
+
+	std::string program_filename = test_res_dir + "/nestest.nes";
 	auto bytes = nes::read_file_bytes(program_filename);
 	auto rom = std::make_unique<INesRom>(bytes);
 	auto nes = std::make_unique<NES>(*rom);
 	auto cpu = nes->cpu;
 	cpu->SetPC(0xC000);
 
-	auto log_filename = argv[2]; // nestest.log
+	auto log_filename = test_res_dir + "/nestest.log";
 	auto log_lines = nes::read_file_lines(log_filename);
 
 	int cycle_count = 0; // TODO: Verify cycle count matches
@@ -163,13 +165,12 @@ int main(int argc, char* argv[])
 		} while (cpu->GetRemainingCycles() > 0);
 		auto expected = ParseLogLine(log_line);
 		auto actual = GetLogFromCpuState(*nes);
-		std::cout << actual << std::endl;
 		if (actual != expected)
 		{
 			std::cout << "Mismatch on line " << log_line_num << std::endl;
 			std::cout << "Expected: " << expected << std::endl;
 			std::cout << "Was:      " << actual << std::endl;
-			break;
+			exit(1);
 		}
 		log_line_num++;
 	}

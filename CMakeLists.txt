@@ -1,4 +1,5 @@
 set(PROJECT_NAME nes_emulator)
+set(TEST_PROJECT_NAME ${PROJECT_NAME}_tests)
 
 # https://stackoverflow.com/questions/10851247/how-to-activate-c-11-in-cmake
 # Fix behavior of CMAKE_CXX_STANDARD when targeting macOS.
@@ -26,6 +27,9 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 
-add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
-target_compile_options(${PROJECT_NAME}_tests PRIVATE -Wall -Wextra)
-target_link_libraries(${PROJECT_NAME}_tests ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+add_executable(${TEST_PROJECT_NAME} ${TEST_SOURCES})
+target_compile_options(${TEST_PROJECT_NAME} PRIVATE -Wall -Wextra)
+target_link_libraries(${TEST_PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+
+enable_testing()
+add_test(NAME ${TEST_PROJECT_NAME} COMMAND ${TEST_PROJECT_NAME} ../res/nestest/)
