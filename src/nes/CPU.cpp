@@ -795,7 +795,18 @@ void CPU::SRE()
 
 void CPU::RRA()
 {
-
+	uint8_t loBit = mData & 0x1;
+	uint8_t ror_result = (mData >> 1) | (mCarryFlag << 7);
+	mBus->write(ror_result, mAddr);
+	mCarryFlag = loBit != 0;
+	uint8_t adc_result = mRegA + ror_result + mCarryFlag;
+	bool isCarry = adc_result < mRegA;
+	bool isOverflow = ((mRegA ^ adc_result) & 0x80) && ((ror_result ^ adc_result) & 0x80);
+	mRegA = adc_result;
+	mCarryFlag = isCarry;
+	mOverflowFlag = isOverflow;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
 }
 
 bool CPU::State::C() const
