@@ -739,13 +739,18 @@ void CPU::LAX()
 
 void CPU::SAX()
 {
-//	uint8_t result = mRegA & mData;
-//	mBus->write(result, mAddr);
+	uint8_t result = mRegA & mRegX;
+	mBus->write(result, mAddr);
 }
 
 void CPU::DCP()
 {
-
+	uint8_t dec_result = mData - 1;
+	mBus->write(dec_result, mAddr);
+	uint8_t cmp_result = mRegA - dec_result;
+	ComputeZ(cmp_result);
+	ComputeN(cmp_result);
+	mCarryFlag = mRegA >= mData;
 }
 
 void CPU::ISB()
