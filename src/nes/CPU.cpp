@@ -763,7 +763,13 @@ void CPU::ISB()
 
 void CPU::SLO()
 {
-
+	bool isCarry = mData & 0x80;
+	uint8_t asl_result = mData << 1;
+	mBus->write(asl_result, mAddr);
+	mCarryFlag = isCarry;
+	mRegA |= asl_result;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
 }
 
 void CPU::RLA()
