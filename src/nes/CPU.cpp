@@ -348,12 +348,9 @@ void CPU::PLP()
 void CPU::ADC()
 {
 	uint8_t result = mRegA + mData + mCarryFlag;
-
 	bool isCarry = result < mRegA;
 	bool isOverflow = ((mRegA ^ result) & 0x80) && ((mData ^ result) & 0x80);
-
 	mRegA = result;
-
 	mCarryFlag = isCarry;
 	mOverflowFlag = isOverflow;
 	ComputeZ(mRegA);
@@ -363,12 +360,9 @@ void CPU::ADC()
 void CPU::SBC()
 {
 	uint8_t result = mRegA - mData - (!mCarryFlag);
-
 	bool isCarry = result < mRegA; // Carry flag is inverted
 	bool isOverflow = ((result ^ mRegA) & 0x80) && ((mData ^ mRegA) & 0x80);
-
 	mRegA = result;
-
 	mCarryFlag = isCarry;
 	mOverflowFlag = isOverflow;
 	ComputeZ(mRegA);
@@ -713,7 +707,7 @@ void CPU::BRK()
 
 void CPU::NOP()
 {
-	// Literally do nothing
+	// Do nothing
 }
 
 void CPU::RTI()
@@ -755,7 +749,16 @@ void CPU::DCP()
 
 void CPU::ISB()
 {
-
+	uint8_t inc_result = mData + 1;
+	mBus->write(inc_result, mAddr);
+	uint8_t sbc_result = mRegA - inc_result - (!mCarryFlag);
+	bool isCarry = inc_result < mRegA; // Carry flag is inverted
+	bool isOverflow = ((sbc_result ^ mRegA) & 0x80) && ((inc_result ^ mRegA) & 0x80);
+	mRegA = sbc_result;
+	mCarryFlag = isCarry;
+	mOverflowFlag = isOverflow;
+	ComputeZ(mRegA);
+	ComputeN(mRegA);
 }
 
 void CPU::SLO()
