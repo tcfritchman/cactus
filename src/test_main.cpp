@@ -49,10 +49,11 @@ class TestLog
 	uint8_t y;
 	uint8_t p;
 	uint8_t sp;
+	int cycle_count;
 
  public:
-	TestLog(uint16_t pc, const std::vector<uint8_t>& opCodes, uint8_t a, uint8_t x, uint8_t y, uint8_t p, uint8_t sp)
-		: pc(pc), op_codes(opCodes), a(a), x(x), y(y), p(p), sp(sp)
+	TestLog(uint16_t pc, const std::vector<uint8_t>& opCodes, uint8_t a, uint8_t x, uint8_t y, uint8_t p, uint8_t sp, int cycle_count)
+		: pc(pc), op_codes(opCodes), a(a), x(x), y(y), p(p), sp(sp), cycle_count(cycle_count)
 	{
 	}
 
@@ -64,7 +65,8 @@ class TestLog
 			x == rhs.x &&
 			y == rhs.y &&
 			p == rhs.p &&
-			sp == rhs.sp;
+			sp == rhs.sp &&
+			cycle_count == rhs.cycle_count;
 	}
 
 	bool operator!=(const TestLog& rhs) const
@@ -94,7 +96,9 @@ class TestLog
 		   << " V: " << nes::test_bit(log.p, 6)
 		   << " N: " << nes::test_bit(log.p, 7)
 		   << " |"
-		   << " SP: " << nes::hex(log.sp);
+		   << " SP: " << nes::hex(log.sp)
+		   << " |"
+		   << " CYCLE: " << std::to_string(log.cycle_count);
 		return os;
 	}
 };
@@ -110,6 +114,7 @@ TestLog ParseLogLine(std::string line)
 	auto op_code_1_substr = line.substr(6, 2);
 	auto op_code_2_substr = line.substr(9, 2);
 	auto op_code_3_substr = line.substr(12, 2);
+	auto cycle_substr = line.substr(90, 4);
 
 	auto pc = static_cast<uint16_t>(std::stoi(pc_substr, nullptr, 16));
 	auto a = static_cast<uint8_t>(std::stoi(a_substr, nullptr, 16));
@@ -117,6 +122,7 @@ TestLog ParseLogLine(std::string line)
 	auto y = static_cast<uint8_t>(std::stoi(y_substr, nullptr, 16));
 	auto p = static_cast<uint8_t>(std::stoi(p_substr, nullptr, 16));
 	auto sp = static_cast<uint8_t>(std::stoi(sp_substr, nullptr, 16));
+	auto cycle = std::stoi(cycle_substr, nullptr, 10);
 
 	auto op_codes = std::vector<uint8_t>{};
 	op_codes.push_back(static_cast<uint8_t>(std::stoi(op_code_1_substr, nullptr, 16)));
@@ -129,15 +135,15 @@ TestLog ParseLogLine(std::string line)
 		op_codes.push_back(static_cast<uint8_t>(std::stoi(op_code_3_substr, nullptr, 16)));
 	}
 
-	return TestLog{ pc, op_codes, a, x, y, p, sp };
+	return TestLog{ pc, op_codes, a, x, y, p, sp, cycle};
 }
 
-TestLog GetLogFromCpuState(const NES& nes)
+TestLog GetLogFromCpuState(const NES& nes, const int cycle)
 {
 	auto state = nes.cpu->GetState();
 	auto op_codes = nes.cpu->GetCurrentOpcodes();
 
-	return TestLog{ state.PC, op_codes, state.A, state.X, state.Y, state.P, state.SP };
+	return TestLog{ state.PC, op_codes, state.A, state.X, state.Y, state.P, state.SP, cycle };
 }
 
 int main(int argc, char* argv[])
@@ -154,7 +160,7 @@ int main(int argc, char* argv[])
 	auto log_filename = test_res_dir + "/nestest.log";
 	auto log_lines = nes::read_file_lines(log_filename);
 
-	int cycle_count = 0; // TODO: Verify cycle count matches
+	int cycle_count = 0;
 	int log_line_num = 1;
 	for (const std::string& log_line : log_lines)
 	{
@@ -164,7 +170,7 @@ int main(int argc, char* argv[])
 			cycle_count++;
 		} while (cpu->GetRemainingCycles() > 0);
 		auto expected = ParseLogLine(log_line);
-		auto actual = GetLogFromCpuState(*nes);
+		auto actual = GetLogFromCpuState(*nes, cycle_count);
 		if (actual != expected)
 		{
 			std::cout << "Mismatch on line " << log_line_num << std::endl;
