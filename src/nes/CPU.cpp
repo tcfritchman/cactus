@@ -785,7 +785,12 @@ void CPU::RLA()
 
 void CPU::SRE()
 {
-
+	bool isCarry = mData & 0x1;
+	uint8_t lsr_result = mData >> 1;
+	mBus->write(lsr_result, mAddr);
+	mCarryFlag = isCarry;
+	mRegA ^= lsr_result;
+	ComputeZ(mRegA);
 }
 
 void CPU::RRA()
