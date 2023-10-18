@@ -68,10 +68,19 @@ void CPU::IRQ()
 
 void CPU::Reset()
 {
+	mRegA = 0;
+	mRegX = 0;
+	mRegY = 0;
+	mCarryFlag = false;
+	mOverflowFlag = false;
+	mNegativeFlag = false;
+	mZeroFlag = false;
+	mDecimalFlag = false;
 	mInterruptDisableFlag = true; // TODO: Is this correct?
-	// TODO: Probably reset some registers as well?
+	mRegSP = 0xFD;
 	uint16_t jump_addr = nes::address(mBus->read(0xFFFC), mBus->read(0xFFFD));
-	SetPC(jump_addr);
+	mRegPC = jump_addr;
+	mCyclesRemaining = 8;
 }
 
 void CPU::NMI()
