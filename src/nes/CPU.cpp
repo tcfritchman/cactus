@@ -12,6 +12,10 @@ void CPU::Cycle()
 		Operation operation = OPERATIONS[current_instr];
 		mCyclesRemaining = operation.cycles - 1;
 		PerformAddressingMode(operation);
+		if (mIsPageBoundaryCrossed && IsExtraCycleInstruction(operation.instruction))
+		{
+			mCyclesRemaining++;
+		}
 		mRegPC += operation.bytes;
 		PerformInstruction(operation);
 	}
@@ -24,6 +28,7 @@ void CPU::Cycle()
 
 void CPU::PerformAddressingMode(const Operation& operation)
 {
+	mIsPageBoundaryCrossed = false;
 	ADDRESSING_MODE_MAP.find(operation.addressing_mode)->second();
 }
 
@@ -33,6 +38,27 @@ void CPU::PerformInstruction(const Operation& operation)
 		operation.addressing_mode == Operation::AddressingMode::ACCUMULATOR ? ACCUMULATOR_INSTRUCTION_MAP
 																			: INSTRUCTION_MAP;
 	instruction_map.find(operation.instruction)->second();
+}
+
+bool CPU::IsExtraCycleInstruction(const Operation::Instruction instruction)
+{
+	switch (instruction)
+	{
+	case Operation::Instruction::ADC:
+	case Operation::Instruction::AND:
+	case Operation::Instruction::CMP:
+	case Operation::Instruction::EOR:
+	case Operation::Instruction::LDA:
+	case Operation::Instruction::LDX:
+	case Operation::Instruction::LDY:
+	case Operation::Instruction::ORA:
+	case Operation::Instruction::SBC:
+	case Operation::Instruction::NOP:
+	case Operation::Instruction::LAX:
+		return true;
+	default:
+		return false;
+	}
 }
 
 void CPU::IRQ()
@@ -158,16 +184,26 @@ void CPU::AbsoluteX()
 {
 	auto addrLo = mBus->read(mRegPC + 1);
 	auto addrHi = mBus->read(mRegPC + 2);
-	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo + mRegX;
+	uint16_t absolute_addr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
+	mAddr = absolute_addr + mRegX;
 	mData = mBus->read(mAddr);
+	if ((mAddr ^ absolute_addr) & 0xFF00)
+	{
+		mIsPageBoundaryCrossed = true;
+	}
 }
 
 void CPU::AbsoluteY()
 {
 	auto addrLo = mBus->read(mRegPC + 1);
 	auto addrHi = mBus->read(mRegPC + 2);
-	mAddr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo + mRegY;
+	uint16_t absolute_addr = ((static_cast<uint16_t>(addrHi)) << 8) + addrLo;
+	mAddr = absolute_addr + mRegY;
 	mData = mBus->read(mAddr);
+	if ((mAddr ^ absolute_addr) & 0xFF00)
+	{
+		mIsPageBoundaryCrossed = true;
+	}
 }
 
 void CPU::Indirect()
@@ -199,8 +235,13 @@ void CPU::IndirectIndexed()
 	auto indirect_zero_page = mBus->read(mRegPC + 1);
 	auto indirect_lo = mBus->read(indirect_zero_page);
 	auto indirect_hi = mBus->read((indirect_zero_page + 1) % 0x100);
-	mAddr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo + mRegY;
+	uint16_t base_addr = ((static_cast<uint16_t>(indirect_hi)) << 8) + indirect_lo;
+	mAddr = base_addr + mRegY;
 	mData = mBus->read(mAddr);
+	if ((mAddr ^ base_addr) & 0xFF00)
+	{
+		mIsPageBoundaryCrossed = true;
+	}
 }
 
 void CPU::OOPS()

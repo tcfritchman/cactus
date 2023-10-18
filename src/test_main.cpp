@@ -114,7 +114,7 @@ TestLog ParseLogLine(std::string line)
 	auto op_code_1_substr = line.substr(6, 2);
 	auto op_code_2_substr = line.substr(9, 2);
 	auto op_code_3_substr = line.substr(12, 2);
-	auto cycle_substr = line.substr(90, 4);
+	auto cycle_substr = line.substr(90, 5);
 
 	auto pc = static_cast<uint16_t>(std::stoi(pc_substr, nullptr, 16));
 	auto a = static_cast<uint8_t>(std::stoi(a_substr, nullptr, 16));
