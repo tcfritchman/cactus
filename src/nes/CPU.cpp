@@ -63,7 +63,23 @@ bool CPU::IsExtraCycleInstruction(const Operation::Instruction instruction)
 
 void CPU::IRQ()
 {
-	// TODO
+	if (!mInterruptDisableFlag)
+	{
+		uint16_t return_addr = mRegPC - 1;
+		uint8_t return_addr_hi = nes::hi_byte(return_addr);
+		uint8_t return_addr_lo = nes::lo_byte(return_addr);
+		uint8_t status = GetFlags();
+		mBus->write(return_addr_hi, mRegSP + STACK_ADDR);
+		mRegSP--;
+		mBus->write(return_addr_lo, mRegSP + STACK_ADDR);
+		mRegSP--;
+		mBus->write(status, mRegSP + STACK_ADDR);
+		mRegSP--;
+		uint16_t jump_addr = nes::address(mBus->read(0xFFFE), mBus->read(0xFFFF));
+		mRegPC = jump_addr;
+		mInterruptDisableFlag = true;
+		mCyclesRemaining = 7;
+	}
 }
 
 void CPU::Reset()
@@ -85,7 +101,20 @@ void CPU::Reset()
 
 void CPU::NMI()
 {
-	// TODO
+	uint16_t return_addr = mRegPC - 1;
+	uint8_t return_addr_hi = nes::hi_byte(return_addr);
+	uint8_t return_addr_lo = nes::lo_byte(return_addr);
+	uint8_t status = GetFlags();
+	mBus->write(return_addr_hi, mRegSP + STACK_ADDR);
+	mRegSP--;
+	mBus->write(return_addr_lo, mRegSP + STACK_ADDR);
+	mRegSP--;
+	mBus->write(status, mRegSP + STACK_ADDR);
+	mRegSP--;
+	uint16_t jump_addr = nes::address(mBus->read(0xFFFA), mBus->read(0xFFFB));
+	mRegPC = jump_addr;
+	mInterruptDisableFlag = true;
+	mCyclesRemaining = 8;
 }
 
 CPU::State CPU::GetState()
