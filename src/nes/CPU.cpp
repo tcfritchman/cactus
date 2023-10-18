@@ -34,10 +34,14 @@ void CPU::PerformAddressingMode(const Operation& operation)
 
 void CPU::PerformInstruction(const Operation& operation)
 {
-	auto instruction_map =
-		operation.addressing_mode == Operation::AddressingMode::ACCUMULATOR ? ACCUMULATOR_INSTRUCTION_MAP
-																			: INSTRUCTION_MAP;
-	instruction_map.find(operation.instruction)->second();
+	if (operation.addressing_mode == Operation::AddressingMode::ACCUMULATOR)
+	{
+		ACCUMULATOR_INSTRUCTION_MAP.find(operation.instruction)->second();
+	}
+	else
+	{
+		INSTRUCTION_MAP.find(operation.instruction)->second();
+	}
 }
 
 bool CPU::IsExtraCycleInstruction(const Operation::Instruction instruction)
