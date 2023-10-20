@@ -24,7 +24,18 @@ PPU::~PPU()
 
 void PPU::Cycle()
 {
-	// TODO
+	// Do rendering
+
+	mCurrentLineCycle++;
+	if (mCurrentLineCycle > 340)
+	{
+		mCurrentLineCycle = 0;
+		mCurrentScanline++;
+		if (mCurrentScanline > 261)
+		{
+			mCurrentScanline = 0;
+		}
+	}
 }
 
 uint8_t PPU::ReadPPUSTATUS()

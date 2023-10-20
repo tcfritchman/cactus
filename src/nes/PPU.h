@@ -70,6 +70,10 @@ class PPU : public MemoryDevice
 	// 6-bit NES color values
 	std::vector<uint8_t> mRenderPixels = std::vector<uint8_t>(RENDER_PIXEL_COUNT);
 
+	// Internal state variables
+	int mCurrentScanline = 0;
+	int mCurrentLineCycle = 0;
+
 	uint8_t ReadPPUSTATUS();
 	uint8_t ReadOAMDATA();
 	uint8_t ReadPPUDATA();
