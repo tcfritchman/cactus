@@ -4,12 +4,43 @@
 
 uint8_t PPU::read(uint16_t address)
 {
-	return 0;
+	switch (address)
+	{
+	case PPUSTATUS:
+		return ReadPPUSTATUS();
+	case OAMDATA:
+		return ReadOAMDATA();
+	case PPUDATA:
+		return ReadPPUDATA();
+	default:
+		nes::log("Invalid read PPU: 0x%x", address);
+		return 0;
+	}
 }
 
 void PPU::write(uint8_t data, uint16_t address)
 {
-
+	switch (address)
+	{
+	case PPUCTRL:
+		WritePPUCTRL(data);
+	case PPUMASK:
+		WritePPUMASK(data);
+	case OAMADDR:
+		WriteOAMADDR(data);
+	case OAMDATA:
+		WriteOAMDATA(data);
+	case PPUSCROLL:
+		WritePPUSCROLL(data);
+	case PPUADDR:
+		WritePPUADDR(data);
+	case PPUDATA:
+		WritePPUDATA(data);
+	case OAMDMA:
+		WriteOAMDMA(data);
+	default:
+		nes::log("Invalid write PPU: 0x%x", address);
+	}
 }
 
 PPU::PPU(std::shared_ptr<VideoDataBus> videoDataBus) : mVideoDataBus(std::move(videoDataBus))
