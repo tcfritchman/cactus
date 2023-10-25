@@ -57,6 +57,8 @@ void PPU::Cycle()
 {
 	// Do rendering
 
+	// TODO: Set PPU status register
+
 	mCurrentLineCycle++;
 	if (mCurrentLineCycle > 340)
 	{
@@ -71,20 +73,19 @@ void PPU::Cycle()
 
 uint8_t PPU::ReadPPUSTATUS()
 {
-	// TODO
-	return 0;
+	return (mVerticalBlankStarted << 7)
+	| (mSpriteZeroHit << 6)
+	| (mSpriteOverflow << 5);
 }
 
 uint8_t PPU::ReadOAMDATA()
 {
-	// TODO
-	return 0;
+	return mOAM[mOAMAddress];
 }
 
 uint8_t PPU::ReadPPUDATA()
 {
-	// TODO
-	return 0;
+	return mVideoDataBus->v_read(mPPUAddress);
 }
 
 void PPU::WritePPUCTRL(uint8_t value)

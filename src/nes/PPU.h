@@ -67,6 +67,11 @@ class PPU : public MemoryDevice
 	uint16_t mOAMDMAAddress = 0x0000;
 	std::vector<uint8_t> mOAM = std::vector<uint8_t>(OAM_SIZE);
 
+	// Status flags
+	bool mVerticalBlankStarted = false;
+	bool mSpriteZeroHit = false;
+	bool mSpriteOverflow = false;
+
 	// 6-bit NES color values
 	std::vector<uint8_t> mRenderPixels = std::vector<uint8_t>(RENDER_PIXEL_COUNT);
 
