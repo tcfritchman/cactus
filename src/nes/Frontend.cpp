@@ -15,7 +15,7 @@ Frontend Frontend::Init(SDL_Window* window, SDL_Renderer* renderer, std::shared_
 	(void)io;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsLight();
+	ImGui::StyleColorsDark();
 
 	// Setup Platform/Renderer backends
 	ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);

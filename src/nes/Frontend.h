@@ -26,7 +26,7 @@ class Frontend
 	bool shouldShowMemoryWindow = true;
 	bool shouldShowPatternTableWindow = true;
 
-	const ImVec4 CLEAR_COLOR = ImVec4(56.0f, 56.0f, 56.0f, 255.0f);
+	const ImVec4 CLEAR_COLOR = ImVec4(0.09f, 0.11f, 0.14f, 1.0f);
 
 	Frontend(SDL_Window* mWindow, SDL_Renderer* mRenderer, ImGuiIO& io, std::shared_ptr<Emulator> emulator);
 
