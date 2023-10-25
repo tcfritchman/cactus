@@ -57,7 +57,17 @@ void PPU::Cycle()
 {
 	// Do rendering
 
-	// TODO: Set PPU status register
+	// Set vertical blank started flag after post-render line
+	if (mCurrentScanline == 241 && mCurrentLineCycle == 0)
+	{
+		mVerticalBlankStarted = true;
+	}
+
+	// Clear vertical blank started flag on pre-render line
+	if (mCurrentScanline == 261 && mCurrentLineCycle == 0)
+	{
+		mVerticalBlankStarted = false;
+	}
 
 	mCurrentLineCycle++;
 	if (mCurrentLineCycle > 340)
@@ -73,9 +83,11 @@ void PPU::Cycle()
 
 uint8_t PPU::ReadPPUSTATUS()
 {
-	return (mVerticalBlankStarted << 7)
-	| (mSpriteZeroHit << 6)
-	| (mSpriteOverflow << 5);
+	uint8_t val = (mVerticalBlankStarted << 7)
+		| (mSpriteZeroHit << 6)
+		| (mSpriteOverflow << 5);
+	mVerticalBlankStarted = false; // Cleared on read
+	return val;
 }
 
 uint8_t PPU::ReadOAMDATA()
