@@ -57,10 +57,18 @@ void PPU::Cycle()
 {
 	// Do rendering
 
+	// Reset NMI flag
+	HasNMIOccurred = false;
+
 	// Set vertical blank started flag after post-render line
-	if (mCurrentScanline == 241 && mCurrentLineCycle == 0)
+	if (mCurrentScanline == 241 && mCurrentLineCycle == 1)
 	{
 		mVerticalBlankStarted = true;
+
+		if (mGenerateNMIOnVBlank)
+		{
+			HasNMIOccurred = true;
+		}
 	}
 
 	// Clear vertical blank started flag on pre-render line

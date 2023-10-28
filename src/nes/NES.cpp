@@ -26,5 +26,9 @@ void NES::Cycle()
 		cpu->Cycle();
 	}
 	ppu->Cycle();
+	if (ppu->HasNMIOccurred)
+	{
+		cpu->NMI();
+	}
 	mCycleCount++;
 }

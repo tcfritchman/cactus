@@ -15,6 +15,9 @@ class PPU : public MemoryDevice
 
 	void Cycle();
 
+	// Flag indicating whether an NMI has occurred in the PPU
+	bool HasNMIOccurred = false;
+
 	// PPU Register CPU Memory Map
 	static const uint16_t START_ADDRESS = 0x2000;
 	static const uint16_t PHYSICAL_SIZE = 0x8;
