@@ -55,8 +55,6 @@ PPU::~PPU()
 
 void PPU::Cycle()
 {
-	// Do rendering
-
 	// Reset NMI flag
 	HasNMIOccurred = false;
 
@@ -68,6 +66,12 @@ void PPU::Cycle()
 		if (mGenerateNMIOnVBlank)
 		{
 			HasNMIOccurred = true;
+
+			// Render something
+			for (int i = 0; i < RENDER_PIXEL_COUNT; i++)
+			{
+				mRenderPixels[i] = rand() & 0x3F;
+			}
 		}
 	}
 

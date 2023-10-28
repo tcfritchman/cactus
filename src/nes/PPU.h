@@ -43,6 +43,9 @@ class PPU : public MemoryDevice
 	static const uint16_t RENDER_HEIGHT = 240;
 	static const uint16_t RENDER_PIXEL_COUNT = RENDER_HEIGHT * RENDER_WIDTH;
 
+	// 6-bit NES color values
+	std::vector<uint8_t> mRenderPixels = std::vector<uint8_t>(RENDER_PIXEL_COUNT);
+
  private:
 	std::shared_ptr<VideoDataBus> mVideoDataBus;
 
@@ -74,9 +77,6 @@ class PPU : public MemoryDevice
 	bool mVerticalBlankStarted = false;
 	bool mSpriteZeroHit = false;
 	bool mSpriteOverflow = false;
-
-	// 6-bit NES color values
-	std::vector<uint8_t> mRenderPixels = std::vector<uint8_t>(RENDER_PIXEL_COUNT);
 
 	// Internal state variables
 	int mCurrentScanline = 0;
