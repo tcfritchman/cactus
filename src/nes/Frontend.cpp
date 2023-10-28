@@ -36,7 +36,7 @@ void Frontend::Redraw()
 	DrawMainMenuBar();
 	DrawCPUDebug();
 	DrawMemoryDebug();
-	DrawPatternTableDebug();
+	DrawPPUDebug();
 
 	// Rendering
 	SDL_RenderSetScale(mRenderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
@@ -78,8 +78,8 @@ void Frontend::DrawMainMenuBar()
 			if (ImGui::MenuItem("Memory", NULL, shouldShowMemoryWindow)) {
 				shouldShowMemoryWindow = !shouldShowMemoryWindow;
 			}
-			if (ImGui::MenuItem("Pattern Table", NULL, shouldShowPatternTableWindow)) {
-				shouldShowPatternTableWindow = !shouldShowPatternTableWindow;
+			if (ImGui::MenuItem("Pattern Table", NULL, shouldShowPPUDebugWindow)) {
+				shouldShowPPUDebugWindow = !shouldShowPPUDebugWindow;
 			}
 			ImGui::EndMenu();
 		}
@@ -427,9 +427,9 @@ void Frontend::DrawMemoryDebug()
 	ImGui::End();
 }
 
-void Frontend::DrawPatternTableDebug()
+void Frontend::DrawPPUDebug()
 {
-	if (!shouldShowPatternTableWindow) return;
+	if (!shouldShowPPUDebugWindow) return;
 
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar;
 	bool* p_open = nullptr;
@@ -438,7 +438,7 @@ void Frontend::DrawPatternTableDebug()
 	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 430),
 		ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
-	ImGui::Begin("Pattern Table", p_open, window_flags);
+	ImGui::Begin("PPU Internal State", p_open, window_flags);
 
 	// Test texture
 	int texture_width = 128, texture_height = 128;

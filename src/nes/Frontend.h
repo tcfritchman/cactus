@@ -24,7 +24,7 @@ class Frontend
 	std::shared_ptr<Emulator> mEmulator;
 	bool shouldShowCpuWindow = true;
 	bool shouldShowMemoryWindow = true;
-	bool shouldShowPatternTableWindow = true;
+	bool shouldShowPPUDebugWindow = true;
 
 	const ImVec4 CLEAR_COLOR = ImVec4(0.09f, 0.11f, 0.14f, 1.0f);
 
@@ -32,7 +32,7 @@ class Frontend
 
 	void DrawCPUDebug();
 	void DrawMemoryDebug();
-	void DrawPatternTableDebug();
+	void DrawPPUDebug();
 	void DrawMainMenuBar();
 	void DrawPPURender();
 };
