@@ -19,8 +19,9 @@ class Cartridge : public virtual MemoryDevice, public virtual VideoMemoryDevice
 
 	static const uint16_t START_ADDRESS = 0x4020;
 	static const uint16_t ADDRESS_COUNT = 0xBFE0;
-	static const int CHR_ROM_START = 0x0000;
+	static const int CHR_ROM_START_ADDRESS = 0x0000;
 	static const int CHR_ROM_ADDRESS_COUNT = 0x2000;
+	static const int CHR_ROM_END_ADDRESS = CHR_ROM_START_ADDRESS + CHR_ROM_ADDRESS_COUNT;
 	static const int PRG_ROM_START = 0x8000;
 
  private:

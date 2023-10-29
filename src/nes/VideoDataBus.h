@@ -18,6 +18,8 @@ class VideoDataBus : public VideoMemoryDevice
  private:
 	std::shared_ptr<Cartridge> cart;
 	std::shared_ptr<VideoRAM> vram;
+
+	std::shared_ptr<VideoMemoryDevice> RouteToMemoryDevice(uint16_t address);
 };
 
 #endif //NES_EMULATOR_SRC_VIDEODATABUS_H_
