@@ -10,13 +10,13 @@ uint8_t Cartridge::read(uint16_t address)
 		int index = (address - PRG_ROM_START) % prg_rom_size;
 		return prg_rom[index];
 	}
-	std::printf("Illegal read - Cartridge\n");
+	std::printf("Illegal read 0x%x - Cartridge\n", address);
 	return 0;
 }
 
 void Cartridge::write(uint8_t data, uint16_t address)
 {
-	std::printf("Illegal write - Cartridge\n");
+	std::printf("Illegal write 0x%x - Cartridge\n", address);
 }
 
 uint8_t Cartridge::v_read(uint16_t address)
@@ -26,13 +26,13 @@ uint8_t Cartridge::v_read(uint16_t address)
 		int index = address % chr_rom_size;
 		return chr_rom[index];
 	}
-	std::printf("Illegal video read - Cartridge\n");
+	std::printf("Illegal video read 0x%x - Cartridge\n", address);
 	return 0;
 }
 
 void Cartridge::v_write(uint8_t data, uint16_t address)
 {
-	std::printf("Illegal video write - Cartridge\n");
+	std::printf("Illegal video write 0x%x - Cartridge\n", address);
 }
 
 Cartridge::~Cartridge()

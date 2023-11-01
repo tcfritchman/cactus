@@ -379,10 +379,14 @@ void Frontend::DrawMemoryDebug()
 	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_Once);
 	ImGui::Begin("Memory", p_open, window_flags);
 
+	static int mem_type; // 0: CPU, 1: PPU
 	static int start_addr = 0;
 	static const int rows = 20;
 	static const int step = 1;
 	static const int step_fast = 32;
+
+	ImGui::RadioButton("CPU", &mem_type, 0); ImGui::SameLine();
+	ImGui::RadioButton("PPU", &mem_type, 1);
 
 	ImGui::InputInt("##", &start_addr, step, step_fast, ImGuiInputTextFlags_CharsHexadecimal);
 
@@ -391,6 +395,7 @@ void Frontend::DrawMemoryDebug()
 		start_addr = 0;
 	}
 
+	// Clamp to 16-bit address space
 	if (start_addr > (0xFFFF - rows))
 	{
 		start_addr = 0xFFFF - rows;
@@ -409,7 +414,9 @@ void Frontend::DrawMemoryDebug()
 
 			ImGui::TableNextRow();
 
-			uint8_t data = mEmulator->mNes->dataBus->read(addr);
+			uint8_t data = mem_type == 0 ?
+						   mEmulator->mNes->dataBus->read(addr) :
+						   mEmulator->mNes->videoDataBus->v_read(addr);
 
 			ImGui::TableSetColumnIndex(0);
 			ImGui::Text("%04x", addr);

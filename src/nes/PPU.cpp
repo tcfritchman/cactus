@@ -24,22 +24,31 @@ void PPU::write(uint8_t data, uint16_t address)
 	{
 	case PPUCTRL:
 		WritePPUCTRL(data);
+		return;
 	case PPUMASK:
 		WritePPUMASK(data);
+		return;
 	case OAMADDR:
 		WriteOAMADDR(data);
+		return;
 	case OAMDATA:
 		WriteOAMDATA(data);
+		return;
 	case PPUSCROLL:
 		WritePPUSCROLL(data);
+		return;
 	case PPUADDR:
 		WritePPUADDR(data);
+		return;
 	case PPUDATA:
 		WritePPUDATA(data);
+		return;
 	case OAMDMA:
 		WriteOAMDMA(data);
+		return;
 	default:
 		nes::log("Invalid write PPU: 0x%x", address);
+		return;
 	}
 }
 
@@ -109,7 +118,10 @@ uint8_t PPU::ReadOAMDATA()
 
 uint8_t PPU::ReadPPUDATA()
 {
-	return mVideoDataBus->v_read(mPPUAddress);
+	// TODO: I think this returns the last fetched data
+	uint8_t val = mVideoDataBus->v_read(mPPUAddress);
+	mPPUAddress++;
+	return val;
 }
 
 void PPU::WritePPUCTRL(uint8_t value)
@@ -175,6 +187,7 @@ void PPU::WritePPUADDR(uint8_t value)
 void PPU::WritePPUDATA(uint8_t value)
 {
 	mVideoDataBus->v_write(mPPUAddress, value);
+	mPPUAddress++;
 }
 
 void PPU::WriteOAMDMA(uint8_t value)
