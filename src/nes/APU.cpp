@@ -11,6 +11,11 @@ void APU::write(uint8_t data, uint16_t address)
 
 }
 
+uint8_t APU::peek(uint16_t address)
+{
+	return 0;
+}
+
 APU::APU()
 {
 	std::printf("Created APU\n");

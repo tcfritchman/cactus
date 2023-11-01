@@ -4,23 +4,34 @@
 
 uint8_t PPU::read(uint16_t address)
 {
-	switch (address)
+	uint16_t wrapped_address = START_ADDRESS + (address % 8);
+	switch (wrapped_address)
 	{
 	case PPUSTATUS:
-		return ReadPPUSTATUS();
+	{
+		uint8_t val = FetchPPUSTATUS();
+		mVerticalBlankStarted = false; // Cleared on read
+		return val;
+	}
 	case OAMDATA:
-		return ReadOAMDATA();
+	{
+		return FetchOAMDATA();
+	}
 	case PPUDATA:
-		return ReadPPUDATA();
+	{
+		uint8_t val = FetchPPUDATA();
+		mPPUAddress++;
+		return val;
+	}
 	default:
-		nes::log("Invalid read PPU: 0x%x", address);
 		return 0;
 	}
 }
 
 void PPU::write(uint8_t data, uint16_t address)
 {
-	switch (address)
+	uint16_t wrapped_address = START_ADDRESS + (address % 8);
+	switch (wrapped_address)
 	{
 	case PPUCTRL:
 		WritePPUCTRL(data);
@@ -47,8 +58,23 @@ void PPU::write(uint8_t data, uint16_t address)
 		WriteOAMDMA(data);
 		return;
 	default:
-		nes::log("Invalid write PPU: 0x%x", address);
 		return;
+	}
+}
+
+uint8_t PPU::peek(uint16_t address)
+{
+	uint16_t wrapped_address = START_ADDRESS + (address % 8);
+	switch (wrapped_address)
+	{
+	case PPUSTATUS:
+		return FetchPPUSTATUS();
+	case OAMDATA:
+		return FetchOAMDATA();
+	case PPUDATA:
+		return FetchPPUDATA();
+	default:
+		return 0;
 	}
 }
 
@@ -102,26 +128,22 @@ void PPU::Cycle()
 	}
 }
 
-uint8_t PPU::ReadPPUSTATUS()
+uint8_t PPU::FetchPPUSTATUS()
 {
-	uint8_t val = (mVerticalBlankStarted << 7)
+	return (mVerticalBlankStarted << 7)
 		| (mSpriteZeroHit << 6)
 		| (mSpriteOverflow << 5);
-	mVerticalBlankStarted = false; // Cleared on read
-	return val;
 }
 
-uint8_t PPU::ReadOAMDATA()
+uint8_t PPU::FetchOAMDATA()
 {
 	return mOAM[mOAMAddress];
 }
 
-uint8_t PPU::ReadPPUDATA()
+uint8_t PPU::FetchPPUDATA()
 {
 	// TODO: I think this returns the last fetched data
-	uint8_t val = mVideoDataBus->v_read(mPPUAddress);
-	mPPUAddress++;
-	return val;
+	return mVideoDataBus->v_read(mPPUAddress);
 }
 
 void PPU::WritePPUCTRL(uint8_t value)

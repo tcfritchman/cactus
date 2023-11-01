@@ -9,6 +9,7 @@ class PPU : public MemoryDevice
  public:
 	uint8_t read(uint16_t address) override;
 	void write(uint8_t data, uint16_t address) override;
+	uint8_t peek(uint16_t address) override;
 
 	explicit PPU(std::shared_ptr<VideoDataBus> videoDataBus);
 	virtual ~PPU();
@@ -82,9 +83,9 @@ class PPU : public MemoryDevice
 	int mCurrentScanline = 0;
 	int mCurrentLineCycle = 0;
 
-	uint8_t ReadPPUSTATUS();
-	uint8_t ReadOAMDATA();
-	uint8_t ReadPPUDATA();
+	uint8_t FetchPPUSTATUS();
+	uint8_t FetchOAMDATA();
+	uint8_t FetchPPUDATA();
 
 	void WritePPUCTRL(uint8_t value);
 	void WritePPUMASK(uint8_t value);

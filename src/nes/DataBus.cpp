@@ -11,6 +11,11 @@ void DataBus::write(uint8_t data, uint16_t address)
 	return RouteToMemoryDevice(address)->write(data, address);
 }
 
+uint8_t DataBus::peek(uint16_t address)
+{
+	return RouteToMemoryDevice(address)->peek(address);
+}
+
 DataBus::DataBus(std::shared_ptr<RAM> mRam,
 	std::shared_ptr<PPU> mPPU,
 	std::shared_ptr<APU> mAPU,

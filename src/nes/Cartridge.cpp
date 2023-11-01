@@ -5,18 +5,19 @@
 
 uint8_t Cartridge::read(uint16_t address)
 {
-	if (address >= PRG_ROM_START)
-	{
-		int index = (address - PRG_ROM_START) % prg_rom_size;
-		return prg_rom[index];
-	}
-	std::printf("Illegal read 0x%x - Cartridge\n", address);
-	return 0;
+	int index = (address - PRG_ROM_START) % prg_rom_size;
+	return prg_rom[index];
 }
 
 void Cartridge::write(uint8_t data, uint16_t address)
 {
 	std::printf("Illegal write 0x%x - Cartridge\n", address);
+}
+
+uint8_t Cartridge::peek(uint16_t address)
+{
+	int index = (address - PRG_ROM_START) % prg_rom_size;
+	return prg_rom[index];
 }
 
 uint8_t Cartridge::v_read(uint16_t address)
